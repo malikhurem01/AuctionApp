@@ -1,11 +1,11 @@
 .footer {
   display: flex;
   width: 100%;
+  padding-bottom: 10vh;
   background-color: #252525;
   font-size: 16px;
   font-family: "Lato", sans-serif;
   font-weight: bold;
-  padding-bottom: 10vh;
 }
 
 .footerContainer {
@@ -13,15 +13,15 @@
   flex-direction: row;
   justify-content: space-between;
   flex-wrap: wrap;
-  margin: 31px 160px;
   width: 100%;
+  margin: 31px 160px;
 }
 
 footer h5 {
+  margin-bottom: 24px;
   color: #ffffff;
   opacity: 0.5;
   text-transform: uppercase;
-  margin-bottom: 24px;
 }
 
 footer ul {
@@ -34,6 +34,7 @@ footer ul {
   line-height: 24px;
   margin-bottom: 12px;
   color: #d8d8d8;
+  transition: all 0.3s;
 }
 
 .footer_about li a,
@@ -43,10 +44,10 @@ footer ul {
   color: #d8d8d8;
 }
 
-.footer_about li a:hover,
-.footer_get_in_touch li a:hover:not(.footer_get_in_touch li:last-child a) {
+.footer_about li:hover,
+.footer_get_in_touch li:hover:not(.footer_get_in_touch li:last-child) {
   cursor: pointer;
-  border-bottom: 2px #fff solid;
+  transform: translateY(-2px);
 }
 
 .phoneNumber {
@@ -67,16 +68,16 @@ footer ul {
 .btn {
   display: inline-block;
   padding: 10px 50px;
+  margin-left: 23px;
   border: 3.5px solid #8367d8;
   font-size: 18px;
   font-weight: bold;
-  margin-left: 23px;
   transition: all 0.2s;
 }
 
 .btn:hover {
-  transform: translateY(-3px);
   background-color: #313030;
+  transform: translateY(-3px);
 }
 
 .arrow {
