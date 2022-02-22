@@ -1,6 +1,6 @@
 .footer {
   display: flex;
-  position: absolute;
+  position: absolute; /*position is set to absolute for initial presentation purposes*/
   bottom: 0;
   left: 0;
   right: 0;
@@ -21,7 +21,7 @@
   margin: 31px 160px;
 }
 
-footer h5 {
+.footer h5 {
   margin-bottom: 24px;
   color: #ffffff;
   opacity: 0.5;

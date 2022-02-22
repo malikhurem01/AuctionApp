@@ -1,11 +1,12 @@
 import React from "react";
-import NavBar from "./Components/Header/NavBar";
+import Header from "./Components/Header/Header";
 import Footer from "./Components/Footer/Footer";
 
+//isloggedIn props will later be populated with the correct value, false is just a dummy value as for the initial project
 function App() {
   return (
     <React.Fragment>
-      <NavBar />
+      <Header isLoggedIn={false} />
       <Footer />
     </React.Fragment>
   );
