@@ -33,7 +33,7 @@ const Footer = () => {
                 <a href="/#">support@auction.com</a>
               </li>
               <li>
-                <SocialMediaIcons />
+                <SocialMediaIcons animate={true} />
               </li>
             </ul>
           </div>

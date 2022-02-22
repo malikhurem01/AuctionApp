@@ -2,11 +2,11 @@
   margin-right: 16.4px;
 }
 
-.icons svg {
+.animate svg {
   transition: all 0.2s;
 }
 
-.icons svg:hover {
+.animate svg:hover {
   cursor: pointer;
   transform: translateY(-2px);
 }
