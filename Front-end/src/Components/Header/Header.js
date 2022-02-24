@@ -1,38 +1,32 @@
 import React from "react";
 import classes from "./Header.module.css";
-import logo from "../../Assets/Logo.png";
+import searchIcon from "../../Assets/searchIconSvg.svg";
+import logo from "../../Assets/auction-app-logo.svg";
 
 import SocialMediaIcons from "../UI/SocialMediaIcons";
-import SearchIconSvg from "../UI/SearchIconSvg";
 import NavigationList from "./Navigation/NavigationList";
 
 const Header = (props) => {
-  let headerElement;
-
-  if (props.isLoggedIn) {
-    headerElement = <div className={classes.header_greeting}>Hi, John Doe</div>;
-  } else {
-    headerElement = (
-      <div className={classes.login_buttons}>
-        <span onClick={() => {}} className={classes.sign_btn}>
-          Login
-        </span>
-        &emsp;
-        <span className={classes.interText}>or</span>
-        &emsp;
-        <span onClick={() => {}} className={classes.sign_btn}>
-          Create an account
-        </span>
-      </div>
-    );
-  }
-
   return (
     <React.Fragment>
       <header>
         <div className={classes.header_bar}>
           <SocialMediaIcons animate={true} />
-          {headerElement}
+          {props.isLoggedIn ? (
+            <div className={classes.header_greeting}>Hi, John Doe</div>
+          ) : (
+            <div className={classes.login_buttons}>
+              <span onClick={() => {}} className={classes.sign_btn}>
+                Login
+              </span>
+              &emsp;
+              <span className={classes.interText}>or</span>
+              &emsp;
+              <span onClick={() => {}} className={classes.sign_btn}>
+                Create an account
+              </span>
+            </div>
+          )}
         </div>
       </header>
       <nav>
@@ -42,7 +36,9 @@ const Header = (props) => {
           </div>
           <div className={classes.navBar_searchBar}>
             <input type="text" placeholder="Try enter: Shoes" />
-            <SearchIconSvg />
+            <span className={classes.search_button}>
+              <img src={searchIcon} alt="search button" />
+            </span>
           </div>
           <NavigationList highlight={"home"} />
         </div>

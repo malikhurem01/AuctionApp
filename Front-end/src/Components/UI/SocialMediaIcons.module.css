@@ -2,11 +2,11 @@
   margin-right: 16.4px;
 }
 
-.animate svg {
+.animate img {
   transition: all 0.2s;
 }
 
-.animate svg:hover {
+.animate img:hover {
   cursor: pointer;
   transform: translateY(-2px);
 }

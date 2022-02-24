@@ -1,15 +1,22 @@
-.footer {
+footer {
   display: flex;
-  position: absolute; /*position is set to absolute for initial presentation purposes*/
-  bottom: 0;
-  left: 0;
-  right: 0;
   width: 100%;
   padding-bottom: 10vh;
   background-color: #252525;
   font-size: 16px;
   font-family: "Lato", sans-serif;
   font-weight: bold;
+}
+
+footer p:first-child {
+  margin-bottom: 24px;
+  color: #ffffff;
+  opacity: 0.5;
+  text-transform: uppercase;
+}
+
+footer ul {
+  list-style-type: none;
 }
 
 .footerContainer {
@@ -19,17 +26,6 @@
   flex-wrap: wrap;
   width: 100%;
   margin: 31px 160px;
-}
-
-.footer h5 {
-  margin-bottom: 24px;
-  color: #ffffff;
-  opacity: 0.5;
-  text-transform: uppercase;
-}
-
-footer ul {
-  list-style-type: none;
 }
 
 .footer_about li,

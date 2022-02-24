@@ -8,13 +8,13 @@ header {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin: 0 179px;
+  margin: 0 160px;
   font-size: 0.9rem;
   padding: 5px 0px;
 }
 
 nav {
-  margin: 17.3px 185px;
+  margin: 17.3px 160px;
   text-transform: uppercase;
 }
 
@@ -39,7 +39,7 @@ nav {
 .navBar_searchBar input {
   border: none;
   outline: none;
-  width: 90%;
+  width: 100%;
   padding-right: 100px;
   font-family: 1rem;
 }
@@ -54,6 +54,14 @@ nav {
 .navBar_searchBar input:focus::placeholder {
   color: #8367d8;
   font-weight: 500;
+}
+
+.search_button:hover {
+  cursor: pointer;
+}
+
+.search_button:active {
+  transform: translateY(-1px);
 }
 
 .login_buttons {
