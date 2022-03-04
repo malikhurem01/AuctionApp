@@ -1,0 +1,7 @@
+.search_button:hover {
+  cursor: pointer;
+}
+
+.search_button:active {
+  transform: translateY(-1px);
+}
