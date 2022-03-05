@@ -11,8 +11,6 @@ public class RegistrationController {
 
     private RegistrationService registrationService;
 
-
-
     @PostMapping(path="/registration")
     public String register(@RequestBody RegistrationRequest request){
         return registrationService.signUpUser(request);
