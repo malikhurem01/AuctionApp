@@ -1,8 +1,0 @@
-{
-  "properties": [
-    {
-      "name": "application.api.prefix",
-      "type": "java.lang.String",
-      "description": "Description for application.api.prefix."
-  }
-] }
