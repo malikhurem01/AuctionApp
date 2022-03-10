@@ -13,8 +13,12 @@ header {
   padding: 5px 0px;
 }
 
+.header_container {
+  border-bottom: 1px solid #d8d8d8;
+}
+
 nav {
-  margin: 17.3px 160px;
+  margin: 17.3px 143px;
   text-transform: uppercase;
 }
 
@@ -22,6 +26,14 @@ nav {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.navBar_container_hidden {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
   align-items: center;
   width: 100%;
 }
@@ -51,11 +63,6 @@ nav {
   transition: 0.2s all;
 }
 
-.navBar_searchBar input:focus::placeholder {
-  color: #8367d8;
-  font-weight: 500;
-}
-
 .search_button:hover {
   cursor: pointer;
 }
@@ -80,4 +87,9 @@ nav {
 .sign_btn:hover {
   cursor: pointer;
   transform: translateY(-1px);
+}
+
+.sign_btn a {
+  color: white;
+  font-weight: 400;
 }

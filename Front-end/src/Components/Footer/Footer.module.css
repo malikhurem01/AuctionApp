@@ -4,7 +4,7 @@ footer {
   padding-bottom: 10vh;
   background-color: #252525;
   font-size: 16px;
-  font-family: "Lato", sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: bold;
 }
 
@@ -54,7 +54,7 @@ footer ul {
   margin-left: 12px;
 }
 
-.footer_subscribe li input[type="email"] {
+.footer_subscribe li input[type='email'] {
   padding: 16px 24px;
   background-color: #3b3b3b;
   color: white;
@@ -62,7 +62,7 @@ footer ul {
   border: none;
 }
 
-.footer_subscribe li input[type="email"]::placeholder {
+.footer_subscribe li input[type='email']::placeholder {
   font-weight: bold;
 }
 

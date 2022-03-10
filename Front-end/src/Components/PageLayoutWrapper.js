@@ -1,15 +1,16 @@
-import React from "react";
-import Header from "./Header/Header";
-import Footer from "./Footer/Footer";
+import React from 'react';
 
-import classes from "./PageLayoutWrapper.module.css";
+import Header from './Header/Header';
+import Footer from './Footer/Footer';
 
-const PageLayoutWrapper = (props) => {
+import classes from './style.module.css';
+
+const PageLayoutWrapper = ({ children }) => {
   return (
     <React.Fragment>
-      <Header isLoggedIn={props.isLoggedIn} />
-      <div className={classes.marginClass}>{props.children}</div>
-      <Footer isLoggedIn={props.isLoggedIn} />
+      <Header />
+      <div className={classes.marginClass}>{children}</div>
+      <Footer />
     </React.Fragment>
   );
 };

@@ -1,11 +1,55 @@
-import React from "react";
+import React from 'react';
 
-import PageLayoutWrapper from "./Components/PageLayoutWrapper";
+import { AuthContextProvider } from './Store/auth-context';
+import PageLayoutWrapper from './Components/PageLayoutWrapper';
 
-//isloggedIn props will later be populated with the correct value, false is just a dummy value as for the initial project
-//header and footer are contained inside the PageLayoutWrapper component
-function App() {
-  return <PageLayoutWrapper isLoggedIn={false}></PageLayoutWrapper>;
+import { Route, Switch } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom/cjs/react-router-dom.min';
+
+import PrivacyAndPolicy from './Pages/PrivacyAndPolicy';
+import TermsAndConditions from './Pages/TermsAndConditions';
+import AboutUs from './Pages/AboutUs';
+import Login from './Pages/Login';
+import Registration from './Pages/Registration';
+import Logout from './Pages/Logout';
+
+import routes from './Data/Routes';
+
+function App({ user }) {
+  return (
+    <AuthContextProvider userData={user}>
+      <PageLayoutWrapper>
+        <BrowserRouter>
+          <Switch>
+            <Route exact path={routes.shop}>
+              <h1>Shop page</h1>
+            </Route>
+            <Route path={routes.account}>
+              <h1>My Account page</h1>
+            </Route>
+            <Route path={routes.termsAndConditions}>
+              <TermsAndConditions />
+            </Route>
+            <Route path={routes.aboutUs}>
+              <AboutUs />
+            </Route>
+            <Route path={routes.privacyAndPolicy}>
+              <PrivacyAndPolicy />
+            </Route>
+            <Route path={routes.logout}>
+              <Logout />
+            </Route>
+            <Route path={routes.login}>
+              <Login />
+            </Route>
+            <Route path={routes.register}>
+              <Registration />
+            </Route>
+          </Switch>
+        </BrowserRouter>
+      </PageLayoutWrapper>
+    </AuthContextProvider>
+  );
 }
 
 export default App;
