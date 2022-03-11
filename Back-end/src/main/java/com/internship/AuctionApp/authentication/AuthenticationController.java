@@ -1,14 +1,12 @@
 package com.internship.AuctionApp.authentication;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.internship.AuctionApp.Models.User;
 import com.internship.AuctionApp.services.AuthenticationService;
 import com.internship.AuctionApp.services.UserServiceImpl;
 import com.internship.AuctionApp.configuration.JWTConfig;
-import com.internship.AuctionApp.utils.JWTSignAlgorithm;
+import com.internship.AuctionApp.utils.JWTDecode;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -56,10 +54,7 @@ public class AuthenticationController {
     @GetMapping(path = "/auth/users/current")
     @CrossOrigin(origins = {"http://localhost:3000"})
     public ResponseEntity<?> getUserWithToken(final HttpServletRequest request) throws UsernameNotFoundException {
-        final JWTVerifier verifier = JWT.require(JWTSignAlgorithm.getAlgorithmSignature()).build();
-        final String authorizationHeader = request.getHeader(AUTHORIZATION);
-        final String token = authorizationHeader.substring(jwtConfig.getTokenPrefix().length());
-        final DecodedJWT decodedJWT = verifier.verify(token);
+        final DecodedJWT decodedJWT = JWTDecode.verifyToken(request.getHeader(AUTHORIZATION));
         final String username = decodedJWT.getSubject();
         User user = null;
         try {
@@ -68,6 +63,7 @@ public class AuthenticationController {
             logger.error(exc.getMessage());
             return ResponseEntity.badRequest().build();
         }
+
         return ResponseEntity.ok().body(new AuthenticationResponse(user));
     }
 
@@ -76,6 +72,8 @@ public class AuthenticationController {
     public ResponseEntity<?> createAuthenticationToken(@RequestBody final AuthenticationRequest loginRequest,
                                                        final HttpServletRequest request)
             throws BadCredentialsException, Exception {
+
+
         Authentication authentication = null;
         try {
             authentication = authenticationManager.authenticate(
@@ -106,18 +104,17 @@ public class AuthenticationController {
                                           final HttpServletResponse response) throws IOException {
         final String authorizationHeader = request.getHeader(AUTHORIZATION);
         String refresh_token = null, new_access_token = null;
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        if (authorizationHeader != null && authorizationHeader.startsWith(jwtConfig.getTokenPrefix())) {
             try {
-                refresh_token = authorizationHeader.substring("Bearer ".length());
-                final JWTVerifier verifier = JWT.require(JWTSignAlgorithm.getAlgorithmSignature()).build();
-                final DecodedJWT decodedJWT = verifier.verify(refresh_token);
+                final DecodedJWT decodedJWT = JWTDecode.verifyToken(authorizationHeader);
                 final String username = decodedJWT.getSubject();
                 final User user = userServiceImpl.loadUserByUsername(username);
                 new_access_token = userServiceImpl.generateToken(user.getUsername(),
                         jwtConfig.getAccessTokenExpireTime(), request.getRequestURL().toString());
+                refresh_token = authorizationHeader.substring(jwtConfig.getTokenPrefix().length());
             } catch (Exception exc) {
                 logger.error(exc.getMessage());
-                response.setHeader("error", exc.getMessage());
+                response.setHeader(HttpHeaders.EXPIRES, exc.getMessage());
                 response.setStatus(FORBIDDEN.value());
                 response.setContentType(APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(), exc.getMessage());

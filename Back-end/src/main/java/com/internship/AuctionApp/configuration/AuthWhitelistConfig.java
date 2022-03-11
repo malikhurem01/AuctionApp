@@ -12,7 +12,10 @@ public class AuthWhitelistConfig {
     public AuthWhitelistConfig() {
         authWhitelist = Arrays.asList(
                 "/api/v1/registration",
-                "/api/v1/authenticate"
+                "/api/v1/authenticate",
+                "/api/v1/get/products",
+                "/api/v1/get/product/**",
+                "/api/v1/auth/refresh"
         );
     }
 

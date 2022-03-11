@@ -1,12 +1,12 @@
 package com.internship.AuctionApp.filters;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.internship.AuctionApp.configuration.AuthWhitelistConfig;
 import com.internship.AuctionApp.configuration.JWTConfig;
 import com.internship.AuctionApp.utils.JWTSignAlgorithm;
+import com.internship.AuctionApp.utils.JWTDecode;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -33,11 +33,9 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            if (authorizationHeader != null && authorizationHeader.startsWith(jwtConfig.getTokenPrefix())) {
                 try {
-                    final String token = authorizationHeader.substring(jwtConfig.getTokenPrefix().length());
-                    final JWTVerifier verifier = JWT.require(JWTSignAlgorithm.getAlgorithmSignature()).build();
-                    final DecodedJWT decodedJWT = verifier.verify(token);
+                    final DecodedJWT decodedJWT = JWTDecode.verifyToken(authorizationHeader);
                     final String username = decodedJWT.getSubject();
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(username, null, null);

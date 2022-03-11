@@ -13,6 +13,9 @@ import Login from './Pages/Login';
 import Registration from './Pages/Registration';
 import Logout from './Pages/Logout';
 
+import ProductOverviewPage from './Pages/ProductPage/ProductOverviewPage';
+import LandingPage from './Pages/LandingPage/LandingPage';
+
 import routes from './Data/Routes';
 
 function App({ user }) {
@@ -21,6 +24,12 @@ function App({ user }) {
       <PageLayoutWrapper>
         <BrowserRouter>
           <Switch>
+            <Route exact path={routes.index}>
+              <LandingPage />
+            </Route>
+            <Route path={routes.shopProduct}>
+              <ProductOverviewPage />
+            </Route>
             <Route exact path={routes.shop}>
               <h1>Shop page</h1>
             </Route>

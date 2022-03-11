@@ -58,6 +58,11 @@ const LoginForm = () => {
           <div className={classes.login_btn}>
             <input type="submit" value="login" />
           </div>
+          <div className={classes.alternative}>
+            <p>
+              <a href="/password-reset">Forgot password?</a>
+            </p>
+          </div>
         </div>
       </form>
     </div>
