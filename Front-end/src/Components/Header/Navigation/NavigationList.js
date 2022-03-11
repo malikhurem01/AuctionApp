@@ -1,22 +1,21 @@
-import React from "react";
-import classes from "./NavigationList.module.css";
+import React from 'react';
 
-const NavigationList = (props) => {
+import classes from './NavigationList.module.css';
+
+const NavigationList = ({ highlight }) => {
   const elements = [
-    { label: "home", route: "/#" },
-    { label: "shop", route: "/#" },
-    { label: "account", route: "/#" },
+    { label: 'home', route: '/' },
+    { label: 'shop', route: '/shop' },
+    { label: 'account', route: '/account' }
   ];
   return (
     <div className={classes.navBar_navigation}>
       <ul>
-        {elements.map((el) => {
+        {elements.map(el => {
           return (
-            <li>
+            <li key={el.label}>
               <a
-                className={
-                  props.highlight === el.label ? classes.link_active : ""
-                }
+                className={highlight === el.label ? classes.link_active : ''}
                 href={el.route}
               >
                 {el.label}
