@@ -17,19 +17,26 @@
 }
 
 .about_product_main_picture img {
-  width: 453px;
-  height: 622px;
+  width: 450px;
+  height: 600px;
+  margin-top: 0.5em;
 }
 
 .about_product_pictures_row {
   display: flex;
   flex-direction: row;
   gap: 24.5px;
+  margin-top: 1.5em;
+  margin-bottom: 4em;
 }
 
 .about_product_pictures_row img {
   width: 71px;
   height: 97.49px;
+}
+
+.about_product_pictures_row img:hover {
+  cursor: pointer;
 }
 
 .about_product_information {
@@ -95,9 +102,9 @@
   display: inline-block;
   border: 2.8px solid #8367d8;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 700;
   transition: all 0.2s;
-
+  background-color: #fff;
   padding: 10px 0;
   padding-left: 20px;
   padding-right: 30px;
@@ -111,6 +118,7 @@
   transform: translateY(-3px);
   background-color: #b0a0df;
   color: #fff;
+  cursor: pointer;
 }
 
 .btn:active {

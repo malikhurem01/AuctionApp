@@ -5,11 +5,10 @@ import ProductsGrid from "../../Components/Products/ProductsGrid";
 import productService from "../../Services/productsService";
 
 import arrow from "../../Assets/arrowRight.svg";
-import advertImg from "../../Assets/product_advert_img.png";
 
 import classes from "./LandingPage.module.css";
 
-// DUMMY CATEGORIES FOR NOW
+// TODO
 const categories = [
   { name: "Fashion", url: "/categories?category=Fashion" },
   { name: "Accesories", url: "/categories?category=Accesories" },
@@ -27,10 +26,19 @@ const LandingPage = () => {
   const [newArrivalsActive, setNewArrivalsActive] = useState(true);
   const [lastChanceActive, setLastChanceActive] = useState(false);
   const [productsState, setProductsState] = useState([]);
+  const [advertProduct, setAdvertProduct] = useState({ title: null });
+
+  const tabsHandler = ({ newArrivals, lastChance }) => {
+    setNewArrivalsActive(newArrivals);
+    setLastChanceActive(lastChance);
+  };
 
   useEffect(() => {
     productService.fetchAllProducts().then((response) => {
-      setProductsState(response.data);
+      if (response.data.length >= 1) {
+        setProductsState(() => response.data);
+        setAdvertProduct(() => response.data[2]);
+      }
     });
   }, []);
 
@@ -51,16 +59,20 @@ const LandingPage = () => {
         </div>
         <div className={classes.product}>
           <div className={classes.advertisement_product_about}>
-            <h3>Running Shoes</h3>
-            <h3>Start From $59.00</h3>
+            <h3>{advertProduct.title}</h3>
+            <h3>Start From ${advertProduct.start_price}</h3>
             <p className={classes.paragraph}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Vestibulum hendrerit odio a erat lobortis auctor. Curabitur
-              sodales pharetra placerat. Aenean auctor luctus tempus. Cras
-              laoreet et magna in dignissim. Nam et tincidunt augue. Vivamus
-              quis malesuada velit. In hac habitasse platea dictumst.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
+              placerat mi commodo odio condimentum fermentum. Integer viverra
+              ligula libero, id dapibus turpis lobortis et. Pellentesque
+              habitant morbi tristique senectus et netus et malesuada fames ac
+              turpis egestas. Maecenas eget suscipit nisl. Morbi a nisi
+              condimentum, imperdiet risus id, sagittis ligula.
             </p>
-            <a href="/#" className={classes.btn}>
+            <a
+              href={`/shop/product/${advertProduct.product_id}`}
+              className={classes.btn}
+            >
               BID NOW
               <div className={classes.arrow}>
                 <img src={arrow} alt="arrow on a button" />
@@ -68,7 +80,7 @@ const LandingPage = () => {
             </a>
           </div>
           <div className={classes.advertisement_product_image}>
-            <img src={advertImg} alt="highlighted product" />
+            <img src={advertProduct.image_main_url} alt="highlighted product" />
           </div>
         </div>
       </div>
@@ -76,8 +88,7 @@ const LandingPage = () => {
         <div className={classes.products_tabs}>
           <p
             onClick={() => {
-              setNewArrivalsActive(true);
-              setLastChanceActive(false);
+              tabsHandler({ newArrivals: true, lastChance: false });
             }}
             className={newArrivalsActive ? classes.products_tab_active : " "}
           >
@@ -85,8 +96,7 @@ const LandingPage = () => {
           </p>
           <p
             onClick={() => {
-              setNewArrivalsActive(false);
-              setLastChanceActive(true);
+              tabsHandler({ newArrivals: false, lastChance: true });
             }}
             className={lastChanceActive ? classes.products_tab_active : " "}
           >

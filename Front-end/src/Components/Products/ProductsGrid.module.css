@@ -6,6 +6,27 @@
   column-gap: 50px;
 }
 
+@media (max-width: 1200px) {
+}
+
+@media (max-width: 800px) {
+  .grid_product {
+    text-align: center;
+  }
+  .products_grid a {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .grid_product {
+    text-align: center;
+  }
+  .products_grid a {
+    margin-bottom: 20px;
+  }
+}
+
 .grid_product {
   margin-bottom: 2em;
 }
@@ -29,7 +50,7 @@
 
 .grid_product img {
   width: 262px;
-  height: 262px;
+  height: auto;
 }
 
 .paragraph {
