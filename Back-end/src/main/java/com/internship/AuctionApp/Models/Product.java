@@ -6,6 +6,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -20,6 +21,9 @@ public class Product {
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user_id;
+
+    @Column(columnDefinition = "TEXT")
+    private String image_main_url;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String title;
@@ -62,6 +66,7 @@ public class Product {
 
     private Product(ProductBuilder productBuilder) {
         this.user_id = productBuilder.user_id;
+        this.image_main_url = productBuilder.image_main_url;
         this.title = productBuilder.title;
         this.on_stock = productBuilder.on_stock;
         this.size = productBuilder.size;
@@ -83,6 +88,7 @@ public class Product {
 
     public static class ProductBuilder {
         private User user_id;
+        private String image_main_url;
         private String title;
         private int on_stock;
         private String size;
@@ -99,6 +105,11 @@ public class Product {
 
         public ProductBuilder setUser_id(User user) {
             this.user_id = user;
+            return this;
+        }
+
+        public ProductBuilder setMainImageUrl(String url) {
+            this.image_main_url = url;
             return this;
         }
 
@@ -180,7 +191,15 @@ public class Product {
         this.product_id = product_id;
     }
 
-    public User getUser_id(){
+    public String getImage_main_url() {
+        return image_main_url;
+    }
+
+    public void setImage_main_url(String image_main_url) {
+        this.image_main_url = image_main_url;
+    }
+
+    public User getUser_id() {
         return user_id;
     }
 

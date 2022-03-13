@@ -2,7 +2,12 @@ package com.internship.AuctionApp.services;
 
 import com.internship.AuctionApp.Models.Product;
 
+import java.util.List;
+
 public interface ProductService {
     public Product getProduct(Long id);
-    public Product saveProduct(Product product);
+
+    public Product createProduct(Product product);
+
+    public List<Product> findAllProducts();
 }

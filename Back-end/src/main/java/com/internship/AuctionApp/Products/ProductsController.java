@@ -1,13 +1,19 @@
 package com.internship.AuctionApp.Products;
 
+import com.internship.AuctionApp.Models.Image;
 import com.internship.AuctionApp.Models.Product;
+import com.internship.AuctionApp.Repositories.ImageRepository;
 import com.internship.AuctionApp.Repositories.ProductRepository;
+import com.internship.AuctionApp.services.ImageService;
+import com.internship.AuctionApp.services.ProductService;
 import com.internship.AuctionApp.services.ProductServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.List;
 
 
@@ -18,14 +24,14 @@ import java.util.List;
 public class ProductsController {
 
     @Autowired
-    private final ProductRepository productRepository;
+    private final ProductService productService;
 
     @Autowired
-    private final ProductServiceImpl productServiceImpl;
+    private final ImageService imageService;
 
     @GetMapping(path = "/get/products")
     public ResponseEntity<?> getProducts() {
-        final List<Product> productsList = productRepository.findAll();
+        final List<Product> productsList = productService.findAllProducts();
         return ResponseEntity.ok().body(productsList);
     }
 
@@ -34,11 +40,13 @@ public class ProductsController {
         final Long product_id = Long.valueOf(id);
         Product product = null;
         try {
-            product = productServiceImpl.getProduct(product_id);
+            product = productService.getProduct(product_id);
         } catch (Exception err) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok().body(product);
+        final List<Image> imagesList = imageService.findAllByProductId(product);
+        ProductResponse productResponse = new ProductResponse(product, imagesList);
+        return ResponseEntity.ok().body(productResponse);
     }
 
 }
