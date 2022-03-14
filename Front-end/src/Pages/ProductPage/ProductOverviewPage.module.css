@@ -81,16 +81,25 @@
   border: 1px #e3e3e3 solid;
   width: 57%;
   padding: 1em 0;
-  padding-right: 100px;
   font-family: 1rem;
   margin-right: 35px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 .bid_input::placeholder {
   line-height: 19.2px;
   font-weight: 300;
   font-size: 1rem;
-  padding-left: 15px;
+  margin: 5px;
   transition: 0.2s all;
 }
 
@@ -233,4 +242,33 @@
 
 .bid_notification_outbid p {
   color: #8367d8;
+}
+
+.bid_error,
+.bid_high_error {
+  text-align: center;
+  width: 45%;
+  color: #ab944e;
+  font-weight: 700;
+}
+
+.bid_error {
+  transform: translateY(-1em);
+}
+
+.bid_high_error {
+  transform: translateY(1em);
+}
+
+.bid_error p,
+.bid_high_error p {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
+.bid_error img,
+.bid_high_error img {
+  transform: translateY(2.5px);
+  width: 1.2em;
+  height: 1.2em;
 }

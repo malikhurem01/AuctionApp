@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
 import NavLocation from "../../Components/Header/Location/NavLocation";
@@ -9,6 +9,9 @@ import bidService from "../../Services/bidService";
 import constants from "../../Data/Constants/bid";
 
 import arrow from "../../Assets/arrowRight.svg";
+import exclamationMark from "../../Assets/exclamation-mark.svg";
+
+import calculateSQLDaysRemaining from "../../Utils/calculateDaysRemaining";
 
 import classes from "./ProductOverviewPage.module.css";
 
@@ -40,6 +43,19 @@ const ProductOverviewPage = () => {
   const [bidPrice, setBidPrice] = useState(null);
   const [isAvailable, setIsAvailable] = useState(true);
   const [isUserLatestBidder, setIsUserLatestBidder] = useState(false);
+  const [error, setError] = useState(false);
+  const [weeks, setWeeks] = useState(0);
+  const [days, setDays] = useState(0);
+
+  const handleTimeRemaining = useCallback(() => {
+    const WEEKS_REMAINING = Math.floor(
+      calculateSQLDaysRemaining(product.auction_date_end) / 7
+    );
+    const DAYS_REMAINING =
+      calculateSQLDaysRemaining(product.auction_date_end) % 7;
+    setWeeks(WEEKS_REMAINING);
+    setDays(DAYS_REMAINING);
+  }, [product.auction_date_end]);
 
   const handleImageChange = (ev) => {
     setMainImage(ev.target.src);
@@ -50,8 +66,13 @@ const ProductOverviewPage = () => {
   };
 
   const handleBidRequest = async () => {
-    if (!userDataState) {
-      window.location.replace("/login");
+    if (!bidPrice) {
+      setError("Please input a value.");
+      return;
+    }
+    if (bidPrice > productBidHistory.highestBid + 1000) {
+      setError("Input a realistic bid.");
+      setBidPrice(null);
       return;
     }
     let token = JSON.parse(sessionStorage.getItem("user_jwt"));
@@ -59,24 +80,29 @@ const ProductOverviewPage = () => {
       product_id: productId,
       bid_price: bidPrice,
     };
-    try {
-      const bidResponse = await bidService.makeBid(token.access_token, data);
-      let userId = bidResponse.data.user_id.user_id;
-      setBidNotification({
-        state: "SUCCESS",
-        message: constants.SUCCESS_MESSAGE,
+    bidService
+      .makeBid(token.access_token, data)
+      .then((bidResponse) => {
+        let userId = bidResponse.data.user_id.user_id;
+        setBidNotification({
+          state: "SUCCESS",
+          message: constants.SUCCESS_MESSAGE,
+        });
+        handleBidHistory({
+          latest_bidder_id: userId,
+          highestBid: bidResponse.data.bid_price,
+          numberOfBids: ++productBidHistory.numberOfBids,
+        });
+        if (userId === userDataState.user_id) {
+          setIsUserLatestBidder(true);
+        }
+      })
+      .catch((err) => {
+        setBidNotification({
+          state: "ERROR",
+          message: constants.ERROR_MESSAGE,
+        });
       });
-      handleBidHistory({
-        latest_bidder_id: userId,
-        highestBid: bidResponse.data.bid_price,
-        numberOfBids: ++productBidHistory.numberOfBids,
-      });
-      if (userId === userDataState.user_id) {
-        setIsUserLatestBidder(true);
-      }
-    } catch (err) {
-      setBidNotification({ state: "ERROR", message: constants.ERROR_MESSAGE });
-    }
   };
 
   useEffect(() => {
@@ -84,6 +110,7 @@ const ProductOverviewPage = () => {
       setProduct(() => response.data.product);
       setImages(() => response.data.images);
       setMainImage(() => response.data.product.image_main_url);
+      handleTimeRemaining();
       if (userDataState) {
         if (
           response.data.product.user_id["user_id"] === userDataState.user_id
@@ -92,7 +119,7 @@ const ProductOverviewPage = () => {
         }
       }
     });
-  }, [productId, userDataState]);
+  }, [productId, userDataState, handleTimeRemaining]);
 
   useEffect(() => {
     bidService.getBidHistory(productId).then((response) => {
@@ -168,27 +195,46 @@ const ProductOverviewPage = () => {
             </p>
             <p>
               Time left:&nbsp;
-              <span className={classes.product_emphasize}>10 Weeks 6 Days</span>
+              <span className={classes.product_emphasize}>
+                {weeks === 1 ? `${weeks} Week` : `${weeks} Weeks`}{" "}
+                {days === 1 ? `${days} Day` : `${days} Days`}
+              </span>
             </p>
           </div>
           {!isUserLatestBidder &&
             isAvailable &&
             bidNotification.state !== "SUCCESS" && (
               <div className={classes.product_bid_container}>
-                <input
-                  onChange={(ev) => setBidPrice(ev.target.value)}
-                  className={classes.bid_input}
-                  type="number"
-                  placeholder={`Enter $${
-                    productBidHistory.highestBid || product.start_price
-                  } or higher`}
-                />
-                <button onClick={handleBidRequest} className={classes.btn}>
-                  Place bid
-                  <div className={classes.arrow}>
-                    <img src={arrow} alt="arrow on a button" />
+                {userDataState ? (
+                  <React.Fragment>
+                    <input
+                      onChange={(ev) => setBidPrice(ev.target.value)}
+                      className={classes.bid_input}
+                      type="number"
+                      placeholder={`Enter $${
+                        productBidHistory.highestBid || product.start_price
+                      } or higher`}
+                    />
+
+                    <button onClick={handleBidRequest} className={classes.btn}>
+                      Place bid
+                      <div className={classes.arrow}>
+                        <img src={arrow} alt="arrow on a button" />
+                      </div>
+                    </button>
+                  </React.Fragment>
+                ) : (
+                  <div className={classes.bid_error}>
+                    <p>Please log in to place a bid.</p>{" "}
+                    <img src={exclamationMark} alt="exclamation mark" />
                   </div>
-                </button>
+                )}
+                {error && (
+                  <div className={classes.bid_high_error}>
+                    <p>{error}</p>{" "}
+                    <img src={exclamationMark} alt="exclamation mark" />
+                  </div>
+                )}
               </div>
             )}
 

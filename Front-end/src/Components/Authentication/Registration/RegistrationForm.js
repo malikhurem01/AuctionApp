@@ -1,23 +1,42 @@
-import React from 'react';
+import React, { useState } from "react";
 
-import userService from '../../../Services/userService';
+import userService from "../../../Services/userService";
 
-import classes from './Registration.module.css';
+import validatePassword from "../../../Utils/validatePassword";
+
+import classes from "./Registration.module.css";
 
 const RegistrationForm = () => {
-  const handleSubmit = async ev => {
+  const [error, setError] = useState(false);
+  const handleSubmit = async (ev) => {
     ev.preventDefault();
-    let registrationData = {
-      first_name: ev.target.elements['firstName'].value,
-      last_name: ev.target.elements['lastName'].value,
-      email: ev.target.elements['email'].value,
-      password: ev.target.elements['password'].value
+
+    const registrationData = {
+      first_name: ev.target.elements["firstName"].value,
+      last_name: ev.target.elements["lastName"].value,
+      email: ev.target.elements["email"].value,
+      password: ev.target.elements["password"].value,
     };
+
+    const { password } = registrationData;
+
+    if (!validatePassword(password)) {
+      setError(
+        "Password must contain at least one numeric digit, one uppercase and one lowercase letter."
+      );
+      return;
+    }
 
     return userService
       .register(registrationData)
-      .then(() => window.location.replace('/login'))
-      .catch(err => console.log(err));
+      .then(() => window.location.replace("/login"))
+      .catch((err) => {
+        setError("User with that email already exists, please try again.");
+        ev.target.elements["firstName"].value = "";
+        ev.target.elements["lastName"].value = "";
+        ev.target.elements["email"].value = "";
+        ev.target.elements["password"].value = "";
+      });
   };
   return (
     <div className={classes.container}>
@@ -29,6 +48,7 @@ const RegistrationForm = () => {
         <div>
           <label htmlFor="firstName">First Name</label>
           <input
+            required
             id="firstName"
             name="firstName"
             type="text"
@@ -37,11 +57,18 @@ const RegistrationForm = () => {
         </div>
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input id="lastName" name="lastName" type="text" placeholder="Doe" />
+          <input
+            required
+            id="lastName"
+            name="lastName"
+            type="text"
+            placeholder="Doe"
+          />
         </div>
         <div>
           <label htmlFor="email">Enter Email</label>
           <input
+            required
             id="email"
             name="email"
             type="email"
@@ -51,6 +78,7 @@ const RegistrationForm = () => {
         <div>
           <label htmlFor="password">Password</label>
           <input
+            required
             id="password"
             name="password"
             type="password"
@@ -59,13 +87,18 @@ const RegistrationForm = () => {
           <div className={classes.register_btn}>
             <input type="submit" value="register" />
           </div>
-          <div className={classes.alternative}>
-            <p>
-              Already have an account? <a href="/login">Login</a>
-            </p>
-          </div>
         </div>
       </form>
+      {error && (
+        <div className={classes.registration_error}>
+          <p>{error}</p>
+        </div>
+      )}
+      <div className={classes.alternative}>
+        <p>
+          Already have an account? <a href="/login">Login</a>
+        </p>
+      </div>
     </div>
   );
 };

@@ -9,6 +9,7 @@ import arrow from "../../Assets/arrowRight.svg";
 import classes from "./LandingPage.module.css";
 
 // TODO
+// Implement proper categories filtering in next sprint and revisit this code.
 const categories = [
   { name: "Fashion", url: "/categories?category=Fashion" },
   { name: "Accesories", url: "/categories?category=Accesories" },

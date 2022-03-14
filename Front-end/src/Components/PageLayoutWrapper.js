@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
-import Header from './Header/Header';
-import Footer from './Footer/Footer';
+import Header from "./Header/Header";
+import Footer from "./Footer/Footer";
 
-import classes from './style.module.css';
+import classes from "./PageLayoutWrapper.module.css";
 
 const PageLayoutWrapper = ({ children }) => {
   return (

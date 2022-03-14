@@ -4,7 +4,6 @@
   flex-direction: row;
   justify-content: space-between;
   max-width: 100%;
-  margin: 7vh 0;
   width: 100%;
 }
 
@@ -224,7 +223,6 @@
 }
 
 .products_tabs {
-  margin-top: 45px;
   display: flex;
   flex: row;
   font-size: 20px;

@@ -1,30 +1,31 @@
-import React from 'react';
-import { setToken } from '../../../Services/authService';
+import React, { useState } from "react";
+import { setToken } from "../../../Services/authService";
 
-import userService from '../../../Services/userService';
+import userService from "../../../Services/userService";
 
-import classes from './Login.module.css';
+import classes from "./Login.module.css";
 
 const LoginForm = () => {
-  const handleSubmit = ev => {
+  const [error, setError] = useState(false);
+
+  const handleSubmit = (ev) => {
     ev.preventDefault();
     let authData = {
-      userName: ev.target.elements['username'].value,
-      password: ev.target.elements['password'].value
+      userName: ev.target.elements["username"].value,
+      password: ev.target.elements["password"].value,
     };
     userService
       .login(authData)
-      .then(response => {
-        console.log(response);
+      .then((response) => {
         const tokenObj = {
           access_token: response.data.jwt_access,
-          refresh_token: response.data.jwt_refresh
+          refresh_token: response.data.jwt_refresh,
         };
         setToken(tokenObj);
-        window.location.replace('/');
+        window.location.replace("/");
       })
-      .catch(err => {
-        console.log(err);
+      .catch((err) => {
+        setError(true);
       });
   };
 
@@ -41,6 +42,7 @@ const LoginForm = () => {
         <div>
           <label htmlFor="username">Enter Email</label>
           <input
+            required
             id="email"
             name="username"
             type="email"
@@ -50,21 +52,23 @@ const LoginForm = () => {
         <div>
           <label htmlFor="password">Password</label>
           <input
+            required
             id="password"
             name="password"
             type="password"
             placeholder="********"
           />
+
           <div className={classes.login_btn}>
             <input type="submit" value="login" />
           </div>
-          <div className={classes.alternative}>
-            <p>
-              <a href="/password-reset">Forgot password?</a>
-            </p>
-          </div>
         </div>
       </form>
+      {error && (
+        <div className={classes.login_error}>
+          <p>Wrong username or password, please try again.</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -86,9 +86,9 @@ form div label {
 
 .alternative {
   position: relative;
-  left: 50%;
-  transform: translateX(-29%);
   font-weight: bold;
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
 }
 
 .alternative p:first-child {
@@ -101,5 +101,13 @@ form div label {
 
 .alternative a {
   color: #8367d8;
-  margin-left: 20px;
+  margin-left: 10px;
+}
+
+.registration_error {
+  color: #785ad1;
+  font-weight: 700;
+  font-size: 1.1em;
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
 }

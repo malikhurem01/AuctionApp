@@ -1,14 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 
-import SocialMediaIcons from '../UI/SocialMediaIcons';
-import NavigationList from './Navigation/NavigationList';
+import SocialMediaIcons from "../UI/SocialMediaIcons";
+import NavigationList from "./Navigation/NavigationList";
 
-import AuthContext from '../../Store/auth-context';
+import AuthContext from "../../Store/auth-context";
 
-import searchIcon from '../../Assets/searchIconSvg.svg';
-import logo from '../../Assets/auction-app-logo.svg';
+import searchIcon from "../../Assets/searchIconSvg.svg";
+import logo from "../../Assets/auction-app-logo.svg";
 
-import classes from './Header.module.css';
+import classes from "./Header.module.css";
 
 const Header = () => {
   const userContext = useContext(AuthContext);
@@ -16,19 +16,19 @@ const Header = () => {
   const user = userContext.userDataState;
 
   let isHidden =
-    window.location.href.includes('/login') ||
-    window.location.href.includes('/register');
+    window.location.href.includes("/login") ||
+    window.location.href.includes("/register");
 
   return (
     <React.Fragment>
-      <div className={isHidden ? classes.header_container : ' '}>
+      <div className={isHidden ? classes.header_container : " "}>
         <header>
           <div className={classes.header_bar}>
             <SocialMediaIcons animate={true} />
             {user ? (
               <div className={classes.header_greeting}>
                 Hi, &nbsp;
-                {user.first_name + ' ' + user.last_name}
+                {user.first_name + " " + user.last_name}
               </div>
             ) : (
               <div className={classes.login_buttons}>
@@ -54,10 +54,12 @@ const Header = () => {
             }
           >
             <div className={classes.navBar_logo}>
-              <img src={logo} alt="Auction app logo" />
+              <a href="/">
+                <img src={logo} alt="Auction app logo" />
+              </a>
             </div>
             {isHidden ? (
-              ' '
+              " "
             ) : (
               <React.Fragment>
                 <div className={classes.navBar_searchBar}>
@@ -66,7 +68,7 @@ const Header = () => {
                     <img src={searchIcon} alt="search button" />
                   </span>
                 </div>
-                <NavigationList highlight={'home'} />
+                <NavigationList highlight={"home"} />
               </React.Fragment>
             )}
           </div>

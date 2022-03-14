@@ -24,7 +24,6 @@ const initialize = async () => {
         try {
           tokenResponse = await refreshToken(token.refresh_token);
           tokenResponseBody = tokenResponse.data;
-          console.log(tokenResponseBody.jwt_access);
           const tokenObj = {
             access_token: tokenResponseBody.jwt_access,
             refresh_token: tokenResponseBody.jwt_refresh,

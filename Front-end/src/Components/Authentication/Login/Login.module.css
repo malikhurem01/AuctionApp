@@ -98,3 +98,11 @@ form div label {
 .alternative p a {
   color: #8367d8;
 }
+
+.login_error {
+  color: #8367d8;
+  font-weight: 700;
+  font-size: 1.1em;
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
+}

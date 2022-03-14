@@ -17,7 +17,7 @@ const ProductsGrid = ({ products }) => {
               <img src={product.image_main_url} alt="product on home page" />
               <p>{shortenWord(product.title, 22)}</p>
               <p className={classes.paragraph}>
-                Start From <span>${product.start_price}.00</span>
+                Start From <span>${product.start_price}</span>
               </p>
             </div>
           </a>
