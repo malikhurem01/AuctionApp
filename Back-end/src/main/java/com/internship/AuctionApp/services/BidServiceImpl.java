@@ -9,6 +9,8 @@ import com.internship.AuctionApp.Models.User;
 import com.internship.AuctionApp.Repositories.BidRepository;
 import com.internship.AuctionApp.utils.JWTDecode;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,19 +39,12 @@ public class BidServiceImpl implements BidService {
         BidResponse bidResponse;
         if (bidsList.size() > 0) {
             latestBidderId = bidsList.get(bidsList.size() - 1).getUser_id().getUser_id();
-            double max = bidsList.stream()
-                    .mapToDouble(v -> v.getBid_price())
-                    .max().orElseThrow(NoSuchElementException::new);
+            double max = bidsList.stream().mapToDouble(v -> v.getBid_price()).max().orElseThrow(NoSuchElementException::new);
             bidResponse = new BidResponse(latestBidderId, (float) max, bidsList.size());
         } else {
             bidResponse = new BidResponse(latestBidderId, product.getStart_price(), 0);
         }
         return bidResponse;
-    }
-
-    @Override
-    public Bid saveBid(Bid bid) {
-        return bidRepository.save(bid);
     }
 
     @Override
@@ -61,6 +56,7 @@ public class BidServiceImpl implements BidService {
         } catch (Exception err) {
             throw new Exception("Product not found");
         }
+
         final DecodedJWT decodedJWT = JWTDecode.verifyToken(authorizationHeader);
         final String username = decodedJWT.getSubject();
         User user = userServiceImpl.loadUserByUsername(username);
@@ -71,19 +67,20 @@ public class BidServiceImpl implements BidService {
             throw new Exception("Bid can not be lower than the starting price.");
         }
         final List<Bid> bidsList = this.findAllBidByProductId(product);
-        for (int i = 0; i < bidsList.size(); i++) {
-            if (bidsList.get(i).getBid_price() >= bidCreateRequest.getBid_price()) {
-                throw new Exception("Bids lower than the highest one are not allowed.");
-            }
+        double max = 0;
+        if (bidsList.size() > 0) {
+            max = bidsList.stream().mapToDouble(v -> v.getBid_price()).max().orElseThrow(NoSuchElementException::new);
+        }
+        if (max >= bidCreateRequest.getBid_price()) {
+            throw new Exception("Bids lower than the highest one are not allowed.");
         }
         final Timestamp created_at = new Timestamp(System.currentTimeMillis());
         final Bid bid = new Bid(user, product, bidCreateRequest.getBid_price(), created_at);
         try {
-            this.saveBid(bid);
+            return bidRepository.save(bid);
         } catch (Exception exception) {
-            throw new Exception("Server error.");
+            throw new Exception("Bidding on product failed.");
         }
-        return bid;
     }
 
     @Override

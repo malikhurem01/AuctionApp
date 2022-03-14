@@ -78,6 +78,13 @@ public class User implements UserDetails {
         this.updated_at = builder.updated_at;
     }
 
+    public User(User _user){
+        this.user_id = _user.user_id;
+        this.first_name = _user.first_name;
+        this.last_name = _user.last_name;
+        this.email = _user.email;
+    }
+
     public User() {
 
     }

@@ -107,7 +107,6 @@ public class Product {
             this.user_id = user;
             return this;
         }
-
         public ProductBuilder setMainImageUrl(String url) {
             this.image_main_url = url;
             return this;

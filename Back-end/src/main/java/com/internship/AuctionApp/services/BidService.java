@@ -10,8 +10,6 @@ import java.util.List;
 public interface BidService {
     public Bid createBid(BidCreateRequest bidCreateRequest, String authorizationHeader) throws Exception;
 
-    public Bid saveBid(Bid bid);
-
     public List<Bid> findAllBidByProductId(Product product_id);
 
     public BidResponse getBidHistory(Long product_id);

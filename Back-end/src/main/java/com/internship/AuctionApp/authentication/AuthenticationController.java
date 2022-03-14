@@ -34,7 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @AllArgsConstructor
 @RequestMapping(path = "/api/v1")
-@CrossOrigin(origins = {"http://localhost:3000"})
+@CrossOrigin(origins = {"http://localhost:3000", "https://auction-app-internship-fr.herokuapp.com/"})
 @Slf4j
 public class AuthenticationController {
 
@@ -52,7 +52,6 @@ public class AuthenticationController {
     private final JWTConfig jwtConfig = new JWTConfig();
 
     @GetMapping(path = "/auth/users/current")
-    @CrossOrigin(origins = {"http://localhost:3000"})
     public ResponseEntity<?> getUserWithToken(final HttpServletRequest request) throws UsernameNotFoundException {
         final DecodedJWT decodedJWT = JWTDecode.verifyToken(request.getHeader(AUTHORIZATION));
         final String username = decodedJWT.getSubject();
@@ -64,11 +63,12 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.ok().body(new AuthenticationResponse(user));
+        final User responseObject = new User(user);
+
+        return ResponseEntity.ok().body(new AuthenticationResponse(responseObject));
     }
 
     @PostMapping(path = "/authenticate")
-    @CrossOrigin(origins = {"http://localhost:3000"})
     public ResponseEntity<?> createAuthenticationToken(@RequestBody final AuthenticationRequest loginRequest,
                                                        final HttpServletRequest request)
             throws BadCredentialsException, Exception {
@@ -127,7 +127,7 @@ public class AuthenticationController {
     }
 
     @PostMapping(path = "/registration")
-    public User register(@RequestBody final UserCreateRequest request) {
+    public User register(@RequestBody final UserCreateRequest request) throws Exception {
         return authenticationService.registerUser(request);
     }
 
