@@ -1,4 +1,4 @@
-package com.internship.AuctionApp.authentication;
+package com.internship.AuctionApp.Authentication;
 
 public class AuthenticationRequest {
     private String userName;

@@ -1,4 +1,4 @@
-package com.internship.AuctionApp.authentication;
+package com.internship.AuctionApp.Authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -6,12 +6,10 @@ import lombok.Getter;
 import lombok.ToString;
 
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Getter
 public class UserCreateRequest {
-    private final String first_name;
-    private final String last_name;
+    private final String firstName;
+    private final String lastName;
     private final String email;
     private final String password;
 }

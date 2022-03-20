@@ -1,18 +1,22 @@
-package com.internship.AuctionApp.authentication;
+package com.internship.AuctionApp.Authentication;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.internship.AuctionApp.DTOs.JwtDTO;
+import com.internship.AuctionApp.DTOs.UserDTO;
+import com.internship.AuctionApp.Exceptions.PasswordNotValidException;
+import com.internship.AuctionApp.Exceptions.UserExistsException;
 import com.internship.AuctionApp.Models.User;
 import com.internship.AuctionApp.services.AuthenticationService;
 import com.internship.AuctionApp.services.UserServiceImpl;
-import com.internship.AuctionApp.configuration.JWTConfig;
+import com.internship.AuctionApp.Configuration.JWTConfig;
 import com.internship.AuctionApp.utils.JWTDecode;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,7 +36,6 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping(path = "/api/v1")
 @CrossOrigin(origins = {"http://localhost:3000", "https://auction-app-internship-fr.herokuapp.com/"})
 @Slf4j
@@ -40,16 +43,22 @@ public class AuthenticationController {
 
     private final static Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
-    @Autowired
     private final AuthenticationManager authenticationManager;
 
-    @Autowired
     private final UserServiceImpl userServiceImpl;
 
-    @Autowired
     private final AuthenticationService authenticationService;
 
     private final JWTConfig jwtConfig = new JWTConfig();
+
+    @Autowired
+    public AuthenticationController(final AuthenticationManager authenticationManager,
+                                    final UserServiceImpl userServiceImpl,
+                                    final AuthenticationService authenticationService) {
+        this.authenticationManager = authenticationManager;
+        this.userServiceImpl = userServiceImpl;
+        this.authenticationService = authenticationService;
+    }
 
     @GetMapping(path = "/auth/users/current")
     public ResponseEntity<?> getUserWithToken(final HttpServletRequest request) throws UsernameNotFoundException {
@@ -62,18 +71,14 @@ public class AuthenticationController {
             logger.error(exc.getMessage());
             return ResponseEntity.badRequest().build();
         }
-
-        final User responseObject = new User(user);
-
-        return ResponseEntity.ok().body(new AuthenticationResponse(responseObject));
+        final UserDTO userDTO = new UserDTO(user);
+        System.out.println(userDTO.getEmail());
+        return ResponseEntity.ok().body(userDTO);
     }
 
     @PostMapping(path = "/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody final AuthenticationRequest loginRequest,
-                                                       final HttpServletRequest request)
-            throws BadCredentialsException, Exception {
-
-
+                                                       final HttpServletRequest request) {
         Authentication authentication = null;
         try {
             authentication = authenticationManager.authenticate(
@@ -96,7 +101,8 @@ public class AuthenticationController {
 
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return ResponseEntity.ok().headers(httpHeaders).body(new AuthenticationResponse(access_token, refresh_token));
+        final JwtDTO jwtDTO = new JwtDTO(access_token, refresh_token);
+        return ResponseEntity.ok().headers(httpHeaders).body(jwtDTO);
     }
 
     @PostMapping("/auth/refresh")
@@ -123,12 +129,24 @@ public class AuthenticationController {
             logger.error("Refresh token not found");
             throw new RuntimeException("Refresh token not found!");
         }
-        return ResponseEntity.ok().body(new AuthenticationResponse(new_access_token, refresh_token));
+        final JwtDTO jwtDTO = new JwtDTO(new_access_token, refresh_token);
+        return ResponseEntity.ok().body(jwtDTO);
     }
 
     @PostMapping(path = "/registration")
-    public User register(@RequestBody final UserCreateRequest request) throws Exception {
-        return authenticationService.registerUser(request);
+    public ResponseEntity<?> register(@RequestBody final UserCreateRequest request) throws Exception {
+        User registeredUser = null;
+        try {
+            registeredUser = authenticationService.registerUser(request);
+        } catch (PasswordNotValidException exception) {
+            return new ResponseEntity<PasswordNotValidException>(HttpStatus.BAD_REQUEST);
+        } catch (UserExistsException exception) {
+            return new ResponseEntity<UserExistsException>(HttpStatus.CONFLICT);
+        } catch (Exception exception) {
+            return ResponseEntity.internalServerError().body(exception.getMessage());
+        }
+        final UserDTO userDTO = new UserDTO(registeredUser);
+        return ResponseEntity.ok().body(userDTO);
     }
 
 }
