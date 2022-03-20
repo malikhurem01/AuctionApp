@@ -1,8 +1,8 @@
-package com.internship.AuctionApp.filters;
+package com.internship.AuctionApp.Filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.internship.AuctionApp.Models.User;
-import com.internship.AuctionApp.configuration.JWTConfig;
+import com.internship.AuctionApp.Configuration.JWTConfig;
 import com.internship.AuctionApp.services.UserServiceImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

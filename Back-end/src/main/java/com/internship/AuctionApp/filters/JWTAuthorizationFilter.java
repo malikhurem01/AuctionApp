@@ -1,11 +1,10 @@
-package com.internship.AuctionApp.filters;
+package com.internship.AuctionApp.Filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.internship.AuctionApp.configuration.AuthWhitelistConfig;
-import com.internship.AuctionApp.configuration.JWTConfig;
-import com.internship.AuctionApp.utils.JWTSignAlgorithm;
+import com.internship.AuctionApp.Configuration.AuthWhitelistConfig;
+import com.internship.AuctionApp.Configuration.JWTConfig;
 import com.internship.AuctionApp.utils.JWTDecode;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +28,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) throws ServletException, IOException {
+        response.setHeader("Access-Control-Expose-Headers", "Date");
         if (AuthWhitelistConfig.isWhitelistRoute(request.getServletPath())) {
             filterChain.doFilter(request, response);
         } else {
