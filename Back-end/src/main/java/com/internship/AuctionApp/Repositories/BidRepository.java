@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface BidRepository extends JpaRepository<Bid, Long> {
 
-    @Query("SELECT b FROM Bid b WHERE b.product_id = :product_id")
-    List<Bid> findAllByProduct_id(@Param("product_id") Product product_id);
+    @Query("SELECT b FROM Bid b WHERE b.productId = :productId")
+    List<Bid> findAllByProductId(@Param("productId") Product productId);
 
 }
