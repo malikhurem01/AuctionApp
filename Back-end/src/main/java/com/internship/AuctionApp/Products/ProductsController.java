@@ -1,42 +1,49 @@
 package com.internship.AuctionApp.Products;
 
+import com.internship.AuctionApp.DTOs.ProductDTO;
+import com.internship.AuctionApp.DTOs.ProductPaginationDTO;
 import com.internship.AuctionApp.Models.Image;
 import com.internship.AuctionApp.Models.Product;
-import com.internship.AuctionApp.Repositories.ImageRepository;
-import com.internship.AuctionApp.Repositories.ProductRepository;
 import com.internship.AuctionApp.services.ImageService;
 import com.internship.AuctionApp.services.ProductService;
-import com.internship.AuctionApp.services.ProductServiceImpl;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 
 @RestController
-@AllArgsConstructor
 @RequestMapping(path = "/api/v1")
 @CrossOrigin(origins = {"http://localhost:3000", "https://auction-app-internship-fr.herokuapp.com/"})
 public class ProductsController {
 
-    @Autowired
+    private static final int PRODUCTS_PER_PAGE = 4;
+
     private final ProductService productService;
 
-    @Autowired
     private final ImageService imageService;
 
-    @GetMapping(path = "/get/products")
-    public ResponseEntity<?> getProducts() {
-        final List<Product> productsList = productService.findAllProducts();
-        return ResponseEntity.ok().body(productsList);
+    @Autowired
+    public ProductsController(final ProductService productService,
+                              final ImageService imageService) {
+        this.productService = productService;
+        this.imageService = imageService;
     }
 
-    @GetMapping(path = "/get/product/{id}")
-    public ResponseEntity<?> getProduct(@PathVariable String id) throws Exception {
+    @GetMapping(path = "/get/products")
+    public ResponseEntity<?> getProducts(@RequestParam(required = false, defaultValue = "createdAt") final String sort,
+                                         @RequestParam(required = false, defaultValue = "0") final int offset) {
+        Page<Product> productsPage = productService.findAllProductsWithPagination(offset, PRODUCTS_PER_PAGE, sort);
+        ProductPaginationDTO productPaginationDTO = new ProductPaginationDTO(productsPage);
+        return ResponseEntity.ok().body(productPaginationDTO);
+    }
+
+    @GetMapping(path = "/get/product")
+    public ResponseEntity<?> getProduct(@RequestParam(name = "productId") final String id) {
         final Long product_id = Long.valueOf(id);
         Product product = null;
         try {
@@ -45,8 +52,10 @@ public class ProductsController {
             return ResponseEntity.badRequest().build();
         }
         final List<Image> imagesList = imageService.findAllByProductId(product);
-        ProductResponse productResponse = new ProductResponse(product, imagesList);
-        return ResponseEntity.ok().body(productResponse);
+        ProductDTO productResponse = new ProductDTO(product, imagesList);
+        String dateString = LocalDate.now().toString();
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Date", dateString);
+        return ResponseEntity.ok().headers(httpHeaders).body(productResponse);
     }
-
 }
