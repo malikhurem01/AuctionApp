@@ -1,10 +1,13 @@
-package com.internship.AuctionApp.configuration;
+package com.internship.AuctionApp.Configuration;
 
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
 public class JWTConfig {
     private final String secret = "supersecret";
     private final String tokenPrefix = "Bearer ";
-    private final int accessTokenExpireTime = 10; // 10 Minutes
-    private final int refreshTokenExpireTime = 50; // 50 Minutes
+    private final int accessTokenExpireTime = 180; // 3 hours
+    private final int refreshTokenExpireTime = 900; // 15 hours
 
     public final String getSecret() {
         return secret;

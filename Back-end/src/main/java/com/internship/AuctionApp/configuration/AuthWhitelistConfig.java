@@ -1,4 +1,4 @@
-package com.internship.AuctionApp.configuration;
+package com.internship.AuctionApp.Configuration;
 
 import org.springframework.context.annotation.Configuration;
 
@@ -14,7 +14,7 @@ public class AuthWhitelistConfig {
                 "/api/v1/registration",
                 "/api/v1/authenticate",
                 "/api/v1/get/products",
-                "/api/v1/get/product/**",
+                "/api/v1/get/product",
                 "/api/v1/auth/refresh"
         );
     }
