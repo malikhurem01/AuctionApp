@@ -1,41 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import userService from "../../../Services/userService";
 
 import validatePassword from "../../../Utils/validatePassword";
 
+import {
+  ERROR_PASSWORD,
+  ERROR_USER,
+  SERVER_ERROR,
+} from "../../../Data/Constants/registration";
+
 import classes from "./Registration.module.css";
+import AppContext from "../../../Store/Context-API/app-context";
 
 const RegistrationForm = () => {
+  //HOOKS
+  const { isDataFetchedHandler } = useContext(AppContext);
+
+  //STATES
   const [error, setError] = useState(false);
+
+  //HANDLERS
   const handleSubmit = async (ev) => {
     ev.preventDefault();
+    //SET LOADING SCREEN
+    isDataFetchedHandler(false);
 
+    //COLLECT REGISTRATION DATA
     const registrationData = {
-      first_name: ev.target.elements["firstName"].value,
-      last_name: ev.target.elements["lastName"].value,
+      firstName: ev.target.elements["firstName"].value,
+      lastName: ev.target.elements["lastName"].value,
       email: ev.target.elements["email"].value,
       password: ev.target.elements["password"].value,
     };
 
     const { password } = registrationData;
 
+    //VALIDATE
     if (!validatePassword(password)) {
-      setError(
-        "Password must contain at least one numeric digit, one uppercase and one lowercase letter."
-      );
+      setError(ERROR_PASSWORD);
+      isDataFetchedHandler(true);
       return;
     }
 
+    //MAKE A POST REQUEST
     return userService
       .register(registrationData)
-      .then(() => window.location.replace("/login"))
-      .catch((err) => {
-        setError("User with that email already exists, please try again.");
-        ev.target.elements["firstName"].value = "";
-        ev.target.elements["lastName"].value = "";
-        ev.target.elements["email"].value = "";
-        ev.target.elements["password"].value = "";
+      .then(() => {
+        window.location.replace("/login?success=true");
+      })
+      .catch(({ response }) => {
+        //REMOVE LOADING SCREEN
+        isDataFetchedHandler(true);
+        if (response.status === 409) setError(ERROR_USER);
+        else if (response.status === 400) setError(ERROR_PASSWORD);
+        else if (response.status === 500) setError(SERVER_ERROR);
       });
   };
   return (

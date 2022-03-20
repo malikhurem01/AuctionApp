@@ -100,7 +100,7 @@ form div label {
 }
 
 .login_error {
-  color: #8367d8;
+  color: rgb(185, 62, 62);
   font-weight: 700;
   font-size: 1.1em;
   margin-top: 1.6em;
