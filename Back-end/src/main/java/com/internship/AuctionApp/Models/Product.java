@@ -6,7 +6,6 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -15,21 +14,22 @@ public class Product {
     @Id
     @SequenceGenerator(name = "SEQUENCE_GENERATOR", allocationSize = 1, sequenceName = "SEQUENCE_GENERATOR")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQUENCE_GENERATOR")
-    private Long product_id;
+    @Column(name = "product_id", nullable = false)
+    private Long productId;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user_id;
+    private User user;
 
-    @Column(columnDefinition = "TEXT")
-    private String image_main_url;
+    @Column(name="image_main_url", columnDefinition = "TEXT")
+    private String imageMainUrl;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private int on_stock;
+    @Column(name="on_stock", nullable = false)
+    private int onStock;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String size;
@@ -37,14 +37,14 @@ public class Product {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private float start_price;
+    @Column(name = "start_price", nullable = false)
+    private float startPrice;
 
-    @Column(nullable = false)
-    private Date auction_date_start;
+    @Column(name = "auction_date_start", nullable = false)
+    private Date auctionDateStart;
 
-    @Column(nullable = false)
-    private Date auction_date_end;
+    @Column(name = "auction_date_end", nullable = false)
+    private Date auctionDateEnd;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String country;
@@ -55,31 +55,31 @@ public class Product {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String street;
 
-    @Column
-    private int zip_code;
+    @Column(name = "zip_code")
+    private int zipCode;
 
-    @Column
-    private Timestamp created_at;
+    @Column(name = "created_at")
+    private Timestamp createdAt;
 
-    @Column
-    private Timestamp updated_at;
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
 
     private Product(ProductBuilder productBuilder) {
-        this.user_id = productBuilder.user_id;
-        this.image_main_url = productBuilder.image_main_url;
+        this.user = productBuilder.user;
+        this.imageMainUrl = productBuilder.imageMainUrl;
         this.title = productBuilder.title;
-        this.on_stock = productBuilder.on_stock;
+        this.onStock = productBuilder.onStock;
         this.size = productBuilder.size;
         this.description = productBuilder.description;
-        this.start_price = productBuilder.start_price;
-        this.auction_date_start = productBuilder.auction_date_start;
-        this.auction_date_end = productBuilder.auction_date_end;
+        this.startPrice = productBuilder.startPrice;
+        this.auctionDateStart = productBuilder.auctionDateStart;
+        this.auctionDateEnd = productBuilder.auctionDateEnd;
         this.country = productBuilder.country;
         this.city = productBuilder.city;
         this.street = productBuilder.street;
-        this.zip_code = productBuilder.zip_code;
-        this.created_at = productBuilder.created_at;
-        this.updated_at = productBuilder.updated_at;
+        this.zipCode = productBuilder.zipCode;
+        this.createdAt = productBuilder.createdAt;
+        this.updatedAt = productBuilder.updatedAt;
     }
 
     public Product() {
@@ -87,28 +87,28 @@ public class Product {
     }
 
     public static class ProductBuilder {
-        private User user_id;
-        private String image_main_url;
+        private User user;
+        private String imageMainUrl;
         private String title;
-        private int on_stock;
+        private int onStock;
         private String size;
         private String description;
-        private float start_price;
-        private Date auction_date_start;
-        private Date auction_date_end;
+        private float startPrice;
+        private Date auctionDateStart;
+        private Date auctionDateEnd;
         private String country;
         private String city;
         private String street;
-        private int zip_code;
-        private Timestamp created_at;
-        private Timestamp updated_at;
+        private int zipCode;
+        private Timestamp createdAt;
+        private Timestamp updatedAt;
 
-        public ProductBuilder setUser_id(User user) {
-            this.user_id = user;
+        public ProductBuilder setUser(User user) {
+            this.user = user;
             return this;
         }
         public ProductBuilder setMainImageUrl(String url) {
-            this.image_main_url = url;
+            this.imageMainUrl = url;
             return this;
         }
 
@@ -117,8 +117,8 @@ public class Product {
             return this;
         }
 
-        public ProductBuilder setOn_stock(int on_stock) {
-            this.on_stock = on_stock;
+        public ProductBuilder setOnStock(int onStock) {
+            this.onStock = onStock;
             return this;
         }
 
@@ -132,18 +132,18 @@ public class Product {
             return this;
         }
 
-        public ProductBuilder setStart_price(float start_price) {
-            this.start_price = start_price;
+        public ProductBuilder setStartPrice(float startPrice) {
+            this.startPrice = startPrice;
             return this;
         }
 
-        public ProductBuilder setAuction_date_start(Date auction_date_start) {
-            this.auction_date_start = auction_date_start;
+        public ProductBuilder setAuctionDateStart(Date auctionDateStart) {
+            this.auctionDateStart = auctionDateStart;
             return this;
         }
 
-        public ProductBuilder setAuction_date_end(Date auction_date_end) {
-            this.auction_date_end = auction_date_end;
+        public ProductBuilder setAuctionDateEnd(Date auctionDateEnd) {
+            this.auctionDateEnd = auctionDateEnd;
             return this;
         }
 
@@ -162,18 +162,18 @@ public class Product {
             return this;
         }
 
-        public ProductBuilder setZip_code(int zip_code) {
-            this.zip_code = zip_code;
+        public ProductBuilder setZipCode(int zipCode) {
+            this.zipCode = zipCode;
             return this;
         }
 
-        public ProductBuilder setCreated_at(Timestamp created_at) {
-            this.created_at = created_at;
+        public ProductBuilder setCreatedAt(Timestamp createdAt) {
+            this.createdAt = createdAt;
             return this;
         }
 
-        public ProductBuilder setUpdated_at(Timestamp updated_at) {
-            this.updated_at = updated_at;
+        public ProductBuilder setUpdatedAt(Timestamp updatedAt) {
+            this.updatedAt = updatedAt;
             return this;
         }
 
@@ -182,24 +182,24 @@ public class Product {
         }
     }
 
-    public Long getProduct_id() {
-        return product_id;
+    public Long getProductId() {
+        return productId;
     }
 
-    public void setProduct_id(Long product_id) {
-        this.product_id = product_id;
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 
-    public String getImage_main_url() {
-        return image_main_url;
+    public String getImageMainUrl() {
+        return imageMainUrl;
     }
 
-    public void setImage_main_url(String image_main_url) {
-        this.image_main_url = image_main_url;
+    public void setImageMainUrl(String imageMainUrl) {
+        this.imageMainUrl = imageMainUrl;
     }
 
-    public User getUser_id() {
-        return user_id;
+    public User getUser() {
+        return user;
     }
 
     public String getTitle() {
@@ -210,12 +210,12 @@ public class Product {
         this.title = title;
     }
 
-    public int getOn_stock() {
-        return on_stock;
+    public int getOnStock() {
+        return onStock;
     }
 
-    public void setOn_stock(int on_stock) {
-        this.on_stock = on_stock;
+    public void setOnStock(int onStock) {
+        this.onStock = onStock;
     }
 
     public String getSize() {
@@ -234,28 +234,28 @@ public class Product {
         this.description = description;
     }
 
-    public float getStart_price() {
-        return start_price;
+    public float getStartPrice() {
+        return startPrice;
     }
 
-    public void setStart_price(float start_price) {
-        this.start_price = start_price;
+    public void setStartPrice(float startPrice) {
+        this.startPrice = startPrice;
     }
 
-    public Date getAuction_date_start() {
-        return auction_date_start;
+    public Date getAuctionDateStart() {
+        return auctionDateStart;
     }
 
-    public void setAuction_date_start(Date auction_date_start) {
-        this.auction_date_start = auction_date_start;
+    public void setAuctionDateStart(Date auctionDateStart) {
+        this.auctionDateStart = auctionDateStart;
     }
 
-    public Date getAuction_date_end() {
-        return auction_date_end;
+    public Date getAuctionDateEnd() {
+        return auctionDateEnd;
     }
 
-    public void setAuction_date_end(Date auction_date_end) {
-        this.auction_date_end = auction_date_end;
+    public void setAuctionDateEnd(Date auctionDateEnd) {
+        this.auctionDateEnd = auctionDateEnd;
     }
 
     public String getCountry() {
@@ -282,28 +282,28 @@ public class Product {
         this.street = street;
     }
 
-    public int getZip_code() {
-        return zip_code;
+    public int getZipCode() {
+        return zipCode;
     }
 
-    public void setZip_code(int zip_code) {
-        this.zip_code = zip_code;
+    public void setZipCode(int zipCode) {
+        this.zipCode = zipCode;
     }
 
-    public Timestamp getCreated_at() {
-        return created_at;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(Timestamp created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Timestamp getUpdated_at() {
-        return updated_at;
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(Timestamp updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
 }

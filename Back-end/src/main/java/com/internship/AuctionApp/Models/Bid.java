@@ -1,12 +1,10 @@
 package com.internship.AuctionApp.Models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Optional;
 
 @Entity
 @Table(name = "bid")
@@ -20,67 +18,59 @@ public class Bid {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user_id;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Product product_id;
+    private Product productId;
 
-    @Column
-    private float bid_price;
+    @Column(name="bid_price")
+    private float bidPrice;
 
-    @Column
-    private Timestamp created_at;
+    @Column(name = "created_at")
+    private Timestamp createdAt;
 
-    public Bid(User user_id, Product product_id, float bid_price, Timestamp created_at) {
-        this.user_id = user_id;
-        this.product_id = product_id;
-        this.bid_price = bid_price;
-        this.created_at = created_at;
+    public Bid(User user, Product productId, float bidPrice, Timestamp createdAt) {
+        this.user = user;
+        this.productId = productId;
+        this.bidPrice = bidPrice;
+        this.createdAt = createdAt;
     }
 
     public Bid() {
 
     }
 
-    public Long getId() {
-        return id;
+    public User getUser() {
+        return user;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public User getUser_id() {
-        return user_id;
+    public Product getProductId() {
+        return productId;
     }
 
-    public void setUser_id(User user_id) {
-        this.user_id = user_id;
+    public void setProductId(Product productId) {
+        this.productId = productId;
     }
 
-    public Product getProduct_id() {
-        return product_id;
+    public float getBidPrice() {
+        return bidPrice;
     }
 
-    public void setProduct_id(Product product_id) {
-        this.product_id = product_id;
+    public void setBidPrice(float bidPrice) {
+        this.bidPrice = bidPrice;
     }
 
-    public float getBid_price() {
-        return bid_price;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setBid_price(float bid_price) {
-        this.bid_price = bid_price;
-    }
-
-    public Timestamp getCreated_at() {
-        return created_at;
-    }
-
-    public void setCreated_at(Timestamp created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 }
