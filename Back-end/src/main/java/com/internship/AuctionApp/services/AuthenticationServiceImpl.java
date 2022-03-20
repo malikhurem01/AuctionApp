@@ -1,35 +1,44 @@
 package com.internship.AuctionApp.services;
 
-import com.internship.AuctionApp.authentication.UserCreateRequest;
+import com.internship.AuctionApp.Exceptions.PasswordNotValidException;
+import com.internship.AuctionApp.Exceptions.ServiceException;
+import com.internship.AuctionApp.Exceptions.UserExistsException;
+import com.internship.AuctionApp.Authentication.UserCreateRequest;
 import com.internship.AuctionApp.Models.User;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 
-@AllArgsConstructor
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserServiceImpl userServiceImpl;
 
+    @Autowired
+    public AuthenticationServiceImpl(UserServiceImpl userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
+    }
+
     @Override
-    public User registerUser(final UserCreateRequest request) {
-        User newUser = null;
+    public User registerUser(final UserCreateRequest request) throws PasswordNotValidException, UserExistsException {
+        User newUser = new User.UserBuilder()
+                .setFirstName(request.getFirstName())
+                .setLastName(request.getLastName())
+                .setPassword(request.getPassword())
+                .setEmail(request.getEmail())
+                .setCreatedAt(new Timestamp(System.currentTimeMillis()))
+                .setUpdatedAt(new Timestamp(System.currentTimeMillis()))
+                .build();
         User registeredUser = null;
         try {
-            newUser = new User.UserBuilder()
-                    .setFirst_name(request.getFirst_name())
-                    .setLast_name(request.getLast_name())
-                    .setPassword(request.getPassword())
-                    .setEmail(request.getEmail())
-                    .setCreated_at(new Timestamp(System.currentTimeMillis()))
-                    .setUpdated_at(new Timestamp(System.currentTimeMillis()))
-                    .build();
-
             registeredUser = userServiceImpl.registerUser(newUser);
-        } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+        } catch (PasswordNotValidException exception) {
+            throw new PasswordNotValidException();
+        } catch (UserExistsException exception) {
+            throw new UserExistsException();
+        } catch (ServiceException exception) {
+            throw new ServiceException(exception.getMessage());
         }
         return registeredUser;
     }

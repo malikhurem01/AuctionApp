@@ -2,35 +2,32 @@ package com.internship.AuctionApp.services;
 
 import com.internship.AuctionApp.Models.Product;
 import com.internship.AuctionApp.Repositories.ProductRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired
     private final ProductRepository productRepository;
 
+    @Autowired
+    public ProductServiceImpl(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
     @Override
-    public Product getProduct(Long id) {
+    public Product getProduct(final Long id) {
         Optional<Product> product = productRepository.findById(id);
         return product.get();
     }
 
     @Override
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public Page<Product> findAllProductsWithPagination(final int offset, final int pageSize, final String sort) {
+        return productRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Direction.ASC, sort)));
     }
-
-    @Override
-    public List<Product> findAllProducts() {
-        return productRepository.findAll();
-    }
-
-
 }
