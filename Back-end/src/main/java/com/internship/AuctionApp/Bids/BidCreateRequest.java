@@ -5,15 +5,15 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class BidCreateRequest {
-    private long product_id;
-    private float bid_price;
+    private long productId;
+    private float bidPrice;
 
-    public long getProduct_id() {
-        return product_id;
+    public long getProductId() {
+        return productId;
     }
 
-    public float getBid_price() {
-        return bid_price;
+    public float getBidPrice() {
+        return bidPrice;
     }
 
 }
