@@ -1,9 +1,9 @@
 import React from "react";
 import classes from "./SocialMediaIcons.module.css";
 
-import facebookIcon from "../../Assets/facebookSvg.svg";
-import instagramIcon from "../../Assets/instagramSvg.svg";
-import twitterIcon from "../../Assets/twitterSvg.svg";
+import facebookIcon from "../../Assets/Svg/facebookSvg.svg";
+import instagramIcon from "../../Assets/Svg/instagramSvg.svg";
+import twitterIcon from "../../Assets/Svg/twitterSvg.svg";
 
 const SocialMediaIcons = ({ animate }) => {
   return (

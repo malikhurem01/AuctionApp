@@ -1,10 +1,10 @@
-package com.internship.AuctionApp.Filters;
+package com.internship.AuctionApp.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.internship.AuctionApp.Configuration.AuthWhitelistConfig;
-import com.internship.AuctionApp.Configuration.JWTConfig;
+import com.internship.AuctionApp.configuration.AuthWhitelistConfig;
+import com.internship.AuctionApp.configuration.JWTConfig;
 import com.internship.AuctionApp.utils.JWTDecode;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
