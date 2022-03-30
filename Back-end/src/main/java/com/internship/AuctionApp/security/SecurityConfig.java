@@ -1,7 +1,7 @@
 package com.internship.AuctionApp.security;
 
-import com.internship.AuctionApp.Filters.JWTAuthenticationFilter;
-import com.internship.AuctionApp.Filters.JWTAuthorizationFilter;
+import com.internship.AuctionApp.filters.JWTAuthenticationFilter;
+import com.internship.AuctionApp.filters.JWTAuthorizationFilter;
 import com.internship.AuctionApp.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

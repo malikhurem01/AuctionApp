@@ -1,5 +1,7 @@
 import React from "react";
 
+import { Link } from "react-router-dom";
+
 import shortenWord from "../../Utils/shortenWord";
 
 import classes from "./ProductsGrid.module.css";
@@ -7,20 +9,17 @@ import classes from "./ProductsGrid.module.css";
 const ProductsGrid = ({ products }) => {
   return (
     <div className={classes.products_grid}>
-      {products.map((product) => {
+      {products.map(({ productId, imageMainUrl, title, startPrice }) => {
         return (
-          <a
-            key={product.product_id}
-            href={"/shop/product/" + product.product_id}
-          >
+          <Link key={productId} to={"/shop/product?productId=" + productId}>
             <div className={classes.grid_product}>
-              <img src={product.image_main_url} alt="product on home page" />
-              <p>{shortenWord(product.title, 22)}</p>
+              <img src={imageMainUrl} alt="product on home page" />
+              <p>{shortenWord(title, 22)}</p>
               <p className={classes.paragraph}>
-                Start From <span>${product.start_price}</span>
+                Start From <span>${startPrice}</span>
               </p>
             </div>
-          </a>
+          </Link>
         );
       })}
     </div>

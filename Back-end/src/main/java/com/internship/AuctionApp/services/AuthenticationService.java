@@ -1,6 +1,6 @@
 package com.internship.AuctionApp.services;
 
-import com.internship.AuctionApp.Authentication.UserCreateRequest;
+import com.internship.AuctionApp.authentication.UserCreateRequest;
 import com.internship.AuctionApp.Models.User;
 
 public interface AuthenticationService {

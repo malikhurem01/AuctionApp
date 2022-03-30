@@ -6,6 +6,7 @@ import { setToken, refreshToken } from "./Services/authService";
 
 import userService from "./Services/userService";
 import sessionRemove from "./Utils/sessionRemove";
+import ContextProvider from "./Store/ContextProvider";
 
 const initialize = async () => {
   let token = JSON.parse(sessionStorage.getItem("user_jwt"));
@@ -15,7 +16,7 @@ const initialize = async () => {
       statusCode = 403;
     try {
       response = await userService.currentUser(token.access_token);
-      user = response.data.user;
+      user = response.data;
       statusCode = response.status;
     } catch (err) {
       if (parseInt(statusCode) === 403) {
@@ -30,7 +31,7 @@ const initialize = async () => {
           };
           setToken(tokenObj);
         } catch (err) {
-          // it means that the refresh token has also expired
+          // It means that the refresh token has also expired
           sessionRemove();
           return null;
         }
@@ -53,7 +54,12 @@ const initialize = async () => {
 };
 
 const startApplication = (user) => {
-  ReactDOM.render(<App user={user} />, document.getElementById("root"));
+  ReactDOM.render(
+    <ContextProvider user={user}>
+      <App />
+    </ContextProvider>,
+    document.getElementById("root")
+  );
 };
 
 initialize().then(startApplication);

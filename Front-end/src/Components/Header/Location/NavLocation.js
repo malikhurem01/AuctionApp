@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
-import arrow from '../../../Assets/locationArrowRight.svg';
+import arrow from "../../../Assets/Svg/locationArrowRight.svg";
 
-import classes from './NavLocation.module.css';
+import classes from "./NavLocation.module.css";
 
 const NavLocation = ({ location, path }) => {
   return (

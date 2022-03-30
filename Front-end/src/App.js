@@ -1,64 +1,81 @@
-import React from 'react';
+import React, { useContext } from "react";
 
-import { AuthContextProvider } from './Store/auth-context';
-import PageLayoutWrapper from './Components/PageLayoutWrapper';
+import { Route, Switch } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom/cjs/react-router-dom.min";
 
-import { Route, Switch } from 'react-router-dom';
-import { BrowserRouter } from 'react-router-dom/cjs/react-router-dom.min';
+import PageLayoutWrapper from "./Components/Wrapper/PageLayoutWrapper";
+import PrivacyAndPolicy from "./Pages/Static/PrivacyAndPolicy";
+import TermsAndConditions from "./Pages/Static/TermsAndConditions";
+import AboutUs from "./Pages/Static/AboutUs";
+import Login from "./Pages/Authentication/Login";
+import Registration from "./Pages/Authentication/Registration";
+import Logout from "./Pages/Authentication/Logout";
+import ProductOverviewPage from "./Pages/ProductPage/ProductOverviewPage";
+import LandingPage from "./Pages/LandingPage/LandingPage";
+import PageNotFound from "./Pages/Static/PageNotFound";
 
-import PrivacyAndPolicy from './Pages/PrivacyAndPolicy';
-import TermsAndConditions from './Pages/TermsAndConditions';
-import AboutUs from './Pages/AboutUs';
-import Login from './Pages/Login';
-import Registration from './Pages/Registration';
-import Logout from './Pages/Logout';
+import LoadingModal from "./Components/UI/LoadingModal";
 
-import ProductOverviewPage from './Pages/ProductPage/ProductOverviewPage';
-import LandingPage from './Pages/LandingPage/LandingPage';
+import AppContext from "./Store/Context-API/app-context";
 
-import routes from './Data/Routes';
+import {
+  index,
+  shopProduct,
+  shop,
+  account,
+  termsAndConditions,
+  privacyAndPolicy,
+  aboutUs,
+  logout,
+  login,
+  register,
+  error,
+} from "./Data/Routes";
 
-function App({ user }) {
+const App = () => {
+  const { isDataFetched } = useContext(AppContext);
   return (
-    <AuthContextProvider userData={user}>
-      <PageLayoutWrapper>
-        <BrowserRouter>
-          <Switch>
-            <Route exact path={routes.index}>
-              <LandingPage />
-            </Route>
-            <Route path={routes.shopProduct}>
-              <ProductOverviewPage />
-            </Route>
-            <Route exact path={routes.shop}>
-              <h1>Shop page</h1>
-            </Route>
-            <Route path={routes.account}>
-              <h1>My Account page</h1>
-            </Route>
-            <Route path={routes.termsAndConditions}>
-              <TermsAndConditions />
-            </Route>
-            <Route path={routes.aboutUs}>
-              <AboutUs />
-            </Route>
-            <Route path={routes.privacyAndPolicy}>
-              <PrivacyAndPolicy />
-            </Route>
-            <Route path={routes.logout}>
-              <Logout />
-            </Route>
-            <Route path={routes.login}>
-              <Login />
-            </Route>
-            <Route path={routes.register}>
-              <Registration />
-            </Route>
-          </Switch>
-        </BrowserRouter>
-      </PageLayoutWrapper>
-    </AuthContextProvider>
+    <PageLayoutWrapper>
+      {!isDataFetched && <LoadingModal />}
+      <BrowserRouter>
+        <Switch>
+          <Route exact path={index}>
+            <LandingPage />
+          </Route>
+          <Route path={shopProduct}>
+            <ProductOverviewPage />
+          </Route>
+          <Route exact path={shop}>
+            <h1>Shop page</h1>
+          </Route>
+          <Route path={account}>
+            <h1>My Account page</h1>
+          </Route>
+          <Route path={termsAndConditions}>
+            <TermsAndConditions />
+          </Route>
+          <Route path={aboutUs}>
+            <AboutUs />
+          </Route>
+          <Route path={privacyAndPolicy}>
+            <PrivacyAndPolicy />
+          </Route>
+          <Route path={logout}>
+            <Logout />
+          </Route>
+          <Route path={login}>
+            <Login />
+          </Route>
+          <Route path={register}>
+            <Registration />
+          </Route>
+          <Route path={error}>
+            <PageNotFound />
+          </Route>
+        </Switch>
+      </BrowserRouter>
+    </PageLayoutWrapper>
   );
-}
+};
 
 export default App;

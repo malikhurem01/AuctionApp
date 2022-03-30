@@ -17,8 +17,8 @@
 }
 
 .about_product_main_picture img {
-  width: 450px;
-  height: 600px;
+  width: 360px;
+  height: auto;
   margin-top: 0.5em;
 }
 
@@ -121,6 +121,7 @@ input[type="number"] {
   position: relative;
   top: 2.6px;
   color: #252525;
+  width: 200px;
 }
 
 .btn:hover {
@@ -252,22 +253,35 @@ input[type="number"] {
   font-weight: 700;
 }
 
-.bid_error {
+.user_owner {
+  margin-top: 2.5em;
+  margin-bottom: 5em;
+  text-align: center;
+  width: 58%;
+  color: #8367d8;
+  font-weight: 700;
+}
+
+.bid_error,
+.user_owner {
   transform: translateY(-1em);
 }
 
-.bid_high_error {
+.bid_high_error,
+.user_owner {
   transform: translateY(1em);
 }
 
 .bid_error p,
-.bid_high_error p {
+.bid_high_error p,
+.user_owner p {
   display: inline-block;
   margin-right: 0.5em;
 }
 
 .bid_error img,
-.bid_high_error img {
+.bid_high_error img,
+.user_owner img {
   transform: translateY(2.5px);
   width: 1.2em;
   height: 1.2em;

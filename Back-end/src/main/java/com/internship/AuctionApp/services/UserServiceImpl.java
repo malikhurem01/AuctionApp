@@ -1,6 +1,7 @@
 package com.internship.AuctionApp.services;
 
 import com.auth0.jwt.JWT;
+import com.internship.AuctionApp.Exceptions.JWTException;
 import com.internship.AuctionApp.Exceptions.PasswordNotValidException;
 import com.internship.AuctionApp.Exceptions.ServiceException;
 import com.internship.AuctionApp.Exceptions.UserExistsException;
@@ -35,8 +36,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public User loadUserByUsername(final String email) throws UsernameNotFoundException {
         Boolean exists = appUserRepository.findByEmail(email).isPresent();
         User user;
-            user = appUserRepository.findByEmail(email).orElseThrow(() ->
-                    new UsernameNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, email)));
+        user = appUserRepository.findByEmail(email).orElseThrow(() ->
+                new UsernameNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, email)));
         return user;
     }
 
@@ -44,29 +45,33 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public User registerUser(final User user) throws UserExistsException, PasswordNotValidException, RuntimeException {
         final Boolean exists = appUserRepository.findByEmail(user.getEmail()).isPresent();
         if (exists) {
-            throw new UserExistsException();
+            throw new UserExistsException("User already exists");
         }
         Boolean isValid = ValidatePassword.isValid(user.getPassword());
         if (!isValid) {
-            throw new PasswordNotValidException();
+            throw new PasswordNotValidException("Password or email not valid");
         }
         final String encodedPassword = passwordConfig.passwordEncoder().encode(user.getPassword());
         user.setPassword(encodedPassword);
         try {
             appUserRepository.save(user);
-        } catch (ServiceException exception) {
-            throw new ServiceException(exception.getMessage());
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
         }
         return user;
     }
 
     @Override
-    public String generateToken(final String subject, final int expirationMinutes, final String issuer) {
-        return JWT.create()
-                .withSubject(subject)
-                .withExpiresAt(new Date(System.currentTimeMillis() + expirationMinutes * 60 * 1000))
-                .withIssuer(issuer)
-                .sign(JWTSignAlgorithm.getAlgorithmSignature());
+    public String generateToken(final String subject, final int expirationMinutes, final String issuer) throws JWTException {
+        try {
+            return JWT.create()
+                    .withSubject(subject)
+                    .withExpiresAt(new Date(System.currentTimeMillis() + expirationMinutes * 60 * 1000))
+                    .withIssuer(issuer)
+                    .sign(JWTSignAlgorithm.getAlgorithmSignature());
+        } catch (Exception e) {
+            throw new JWTException(e.getMessage());
+        }
     }
 
 }

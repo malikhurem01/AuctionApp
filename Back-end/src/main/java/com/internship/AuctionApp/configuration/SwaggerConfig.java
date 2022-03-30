@@ -1,4 +1,4 @@
-package com.internship.AuctionApp.Configuration;
+package com.internship.AuctionApp.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

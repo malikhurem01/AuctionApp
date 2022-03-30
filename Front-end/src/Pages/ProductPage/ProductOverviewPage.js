@@ -1,36 +1,44 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom/cjs/react-router-dom.min";
-
+import useQuery from "../../Hooks/useQuery";
 import NavLocation from "../../Components/Header/Location/NavLocation";
 import Notification from "./Notification";
-import AuthContext from "../../Store/auth-context";
+import AuthContext from "../../Store/Context-API/auth-context";
 import productService from "../../Services/productsService";
 import bidService from "../../Services/bidService";
-import constants from "../../Data/Constants/bid";
+import { ERROR_MESSAGE, SUCCESS_MESSAGE } from "../../Data/Constants/bid";
 
-import arrow from "../../Assets/arrowRight.svg";
-import exclamationMark from "../../Assets/exclamation-mark.svg";
+import arrow from "../../Assets/Svg/arrowRight.svg";
+import exclamationMark from "../../Assets/Svg/exclamation-mark.svg";
 
-import calculateSQLDaysRemaining from "../../Utils/calculateDaysRemaining";
+import calculateDaysRemaining from "../../Utils/calculateDaysRemaining";
 
 import classes from "./ProductOverviewPage.module.css";
+import AppContext from "../../Store/Context-API/app-context";
 
 const ProductOverviewPage = () => {
+  //INITIAL STATES
   const INITIAL_BID_NOTIFICATION_STATE = {
-    state: null,
-    message: null,
+    notificationState: null,
+    notificationMessage: null,
   };
 
   const INITIAL_PRODUCT_HISTORY_STATE = {
-    latest_bidder_id: null,
+    latestBidderId: null,
     highestBid: null,
     numberOfBids: null,
   };
 
   const INITIAL_PRODUCT_STATE = {};
 
-  const { productId } = useParams();
-  const { userDataState } = useContext(AuthContext);
+  //STATES
+  const [bidPrice, setBidPrice] = useState(null);
+  const [isAvailable, setIsAvailable] = useState(true);
+  const [isUserLatestBidder, setIsUserLatestBidder] = useState(false);
+  const [error, setError] = useState(false);
+  const [weeks, setWeeks] = useState(0);
+  const [days, setDays] = useState(0);
+  const [mainImage, setMainImage] = useState({});
+  const [images, setImages] = useState([]);
   const [product, setProduct] = useState(INITIAL_PRODUCT_STATE);
   const [bidNotification, setBidNotification] = useState(
     INITIAL_BID_NOTIFICATION_STATE
@@ -38,98 +46,144 @@ const ProductOverviewPage = () => {
   const [productBidHistory, setProductBidHistory] = useState(
     INITIAL_PRODUCT_HISTORY_STATE
   );
-  const [mainImage, setMainImage] = useState({});
-  const [images, setImages] = useState([]);
-  const [bidPrice, setBidPrice] = useState(null);
-  const [isAvailable, setIsAvailable] = useState(true);
-  const [isUserLatestBidder, setIsUserLatestBidder] = useState(false);
-  const [error, setError] = useState(false);
-  const [weeks, setWeeks] = useState(0);
-  const [days, setDays] = useState(0);
 
-  const handleTimeRemaining = useCallback(() => {
-    const WEEKS_REMAINING = Math.floor(
-      calculateSQLDaysRemaining(product.auction_date_end) / 7
-    );
-    const DAYS_REMAINING =
-      calculateSQLDaysRemaining(product.auction_date_end) % 7;
-    setWeeks(WEEKS_REMAINING);
-    setDays(DAYS_REMAINING);
-  }, [product.auction_date_end]);
+  const { notificationState, notificationMessage } = bidNotification;
+  const { highestBid, numberOfBids } = productBidHistory;
+  const { title, description, startPrice } = product;
 
-  const handleImageChange = (ev) => {
-    setMainImage(ev.target.src);
+  //HOOKS
+  const query = useQuery();
+  const { userDataState } = useContext(AuthContext);
+  const { isDataFetchedHandler } = useContext(AppContext);
+
+  const productIdParameter = query.get("productId");
+
+  const isLoggedIn = userDataState ? true : false;
+
+  //HANDLERS
+  const handleImageChange = ({ target }) => {
+    setMainImage(target.src);
+  };
+
+  const handleBidPrice = ({ target }) => {
+    setBidPrice(target.value);
   };
 
   const handleBidHistory = (bidHistory) => {
     setProductBidHistory(() => bidHistory);
   };
 
+  const handleTimeRemainingState = useCallback((weeks, days) => {
+    setWeeks(weeks);
+    setDays(days);
+  }, []);
+
   const handleBidRequest = async () => {
+    //IF THERE IS NO BID PRICE SEND AN ERROR MESSAGE
     if (!bidPrice) {
       setError("Please input a value.");
       return;
     }
-    if (bidPrice > productBidHistory.highestBid + 1000) {
+    //IF THE PRICE IS ENORMOUSLY HIGH SEND AN ERROR MESSAGE
+    if (bidPrice > highestBid * 2) {
       setError("Input a realistic bid.");
-      setBidPrice(null);
       return;
     }
-    let token = JSON.parse(sessionStorage.getItem("user_jwt"));
+    //GATHER AUTHORIZATION HEADER DATA
+    let { access_token } = JSON.parse(sessionStorage.getItem("user_jwt"));
     let data = {
-      product_id: productId,
-      bid_price: bidPrice,
+      productId: productIdParameter,
+      bidPrice: bidPrice,
     };
-    bidService
-      .makeBid(token.access_token, data)
-      .then((bidResponse) => {
-        let userId = bidResponse.data.user_id.user_id;
-        setBidNotification({
-          state: "SUCCESS",
-          message: constants.SUCCESS_MESSAGE,
-        });
-        handleBidHistory({
-          latest_bidder_id: userId,
-          highestBid: bidResponse.data.bid_price,
-          numberOfBids: ++productBidHistory.numberOfBids,
-        });
-        if (userId === userDataState.user_id) {
-          setIsUserLatestBidder(true);
-        }
-      })
-      .catch((err) => {
-        setBidNotification({
-          state: "ERROR",
-          message: constants.ERROR_MESSAGE,
-        });
-      });
+    //DISPLAY LOADING SCREEN
+    isDataFetchedHandler(false);
+    return (
+      bidService
+        .makeBid(access_token, data)
+        //IF SUCCESS
+        .then(({ data }) => {
+          //SET NOTIFICATION
+          let userId = data.user.userId;
+          setBidNotification({
+            notificationState: "SUCCESS",
+            notificationMessage: SUCCESS_MESSAGE,
+          });
+          //UPDATE BID HISTORY
+          handleBidHistory({
+            latestBidderId: userId,
+            highestBid: data.bidPrice,
+            numberOfBids: numberOfBids + 1,
+          });
+          //SET LATEST BIDDER NOTIFICATION
+          if (userId === userDataState.userId) {
+            setIsUserLatestBidder(true);
+          }
+          //REMOVE LOADING SCREEN
+          isDataFetchedHandler(true);
+        })
+        //IF FAILURE
+        .catch(() => {
+          //SET ERROR NOTIFICATION
+          setBidNotification({
+            notificationState: "ERROR",
+            notificationMessage: ERROR_MESSAGE,
+          });
+          //REMOVE LOADING SCREEN
+          isDataFetchedHandler(true);
+        })
+    );
   };
 
-  useEffect(() => {
-    productService.fetchProductById(productId).then((response) => {
-      setProduct(() => response.data.product);
-      setImages(() => response.data.images);
-      setMainImage(() => response.data.product.image_main_url);
-      handleTimeRemaining();
-      if (userDataState) {
-        if (
-          response.data.product.user_id["user_id"] === userDataState.user_id
-        ) {
-          setIsAvailable(false);
-        }
-      }
-    });
-  }, [productId, userDataState, handleTimeRemaining]);
+  const handleTimeRemaining = useCallback(
+    (date, { auctionDateEnd }) => {
+      const WEEKS_REMAINING = Math.floor(
+        calculateDaysRemaining(date, auctionDateEnd) / 7
+      );
+      const DAYS_REMAINING = calculateDaysRemaining(date, auctionDateEnd) % 7;
+      handleTimeRemainingState(WEEKS_REMAINING, DAYS_REMAINING);
+    },
+    [handleTimeRemainingState]
+  );
 
-  useEffect(() => {
-    bidService.getBidHistory(productId).then((response) => {
-      if (response.data.highestBid > 0) {
-        setProductBidHistory(() => response.data);
+  const handleFetchProduct = useCallback(async () => {
+    //SET LOADING SCREEN
+    isDataFetchedHandler(false);
+
+    //GET REQUEST
+    return productService
+      .fetchProductById(productIdParameter)
+      .then(({ data, headers }) => {
+        //SET PRODUCT STATE
+        setProduct(() => data.product);
+        setImages(() => data.images);
+        setMainImage(() => data.product.imageMainUrl);
+        handleTimeRemaining(headers.date, data.product);
         if (userDataState) {
-          if (response.data.latest_bidder_id === userDataState.user_id) {
+          //IF THE LOGGED IN USER IS THE OWNER, DISABLE BIDDING
+          if (data.product.user["userId"] === userDataState.userId) {
+            setIsAvailable(false);
+          }
+        }
+        isDataFetchedHandler(true);
+      });
+  }, [
+    isDataFetchedHandler,
+    handleTimeRemaining,
+    productIdParameter,
+    userDataState,
+  ]);
+
+  const handleFetchBidHistory = useCallback(async () => {
+    return bidService.getBidHistory(productIdParameter).then(({ data }) => {
+      //CHECKS WHETHER THE HIGHEST BID EXISTS
+      if (data.highestBid) {
+        setProductBidHistory(() => data);
+        if (userDataState) {
+          //CHECKS WHETHER THE LOGGED IN USER IS THE LATTEST BIDDER, IF YES SET THE NOTIFICATION
+          if (data.latestBidderId === userDataState.userId) {
             let bidState = {
-              state: "SUCCESS",
-              message: constants.SUCCESS_MESSAGE,
+              notificationState: "SUCCESS",
+              notificationMessage: SUCCESS_MESSAGE,
             };
             setBidNotification(() => bidState);
             setIsUserLatestBidder(true);
@@ -137,21 +191,25 @@ const ProductOverviewPage = () => {
         }
       }
     });
-  }, [productId, product.start_price, userDataState]);
+  }, [productIdParameter, userDataState]);
+
+  //HOOKS FOR DATA FETCHING
+  useEffect(() => {
+    handleFetchProduct();
+  }, [handleFetchProduct]);
+
+  useEffect(() => {
+    handleFetchBidHistory();
+  }, [handleFetchBidHistory]);
 
   return (
     <React.Fragment>
       <NavLocation
-        location={product.title}
+        location={title}
         path={{ main: "Shop", page: "Single product" }}
       />
-      {bidNotification.state ? (
-        <Notification
-          state={bidNotification.state}
-          message={bidNotification.message}
-        />
-      ) : (
-        ""
+      {notificationState && (
+        <Notification state={notificationState} message={notificationMessage} />
       )}
 
       <div className={classes.about_product_container}>
@@ -160,37 +218,35 @@ const ProductOverviewPage = () => {
             <img src={mainImage} alt="product main" />
           </div>
           <div className={classes.about_product_pictures_row}>
-            {images.map((image) => {
+            {images.map(({ imageUrl }) => {
               return (
                 <img
                   onClick={handleImageChange}
-                  src={image.image_url}
+                  src={imageUrl}
                   alt="no product cover"
-                  key={image.image_url}
+                  key={imageUrl}
                 />
               );
             })}
           </div>
         </div>
         <div className={classes.about_product_information}>
-          <p className={classes.about_product_main_title}>{product.title}</p>
+          <p className={classes.about_product_main_title}>{title}</p>
           <p className={classes.about_product_starting_price}>
             Starts from &nbsp;
-            <span className={classes.product_emphasize}>
-              ${product.start_price}
-            </span>
+            <span className={classes.product_emphasize}>${startPrice}</span>
           </p>
           <div className={classes.about_product_auction}>
             <p>
               Highest bid:&nbsp;
               <span className={classes.product_emphasize}>
-                ${productBidHistory.highestBid || product.start_price}
+                ${highestBid || startPrice}
               </span>
             </p>
             <p>
               Number of bids:&nbsp;
               <span className={classes.product_emphasize}>
-                {productBidHistory.numberOfBids || 0}
+                {numberOfBids || 0}
               </span>
             </p>
             <p>
@@ -203,16 +259,16 @@ const ProductOverviewPage = () => {
           </div>
           {!isUserLatestBidder &&
             isAvailable &&
-            bidNotification.state !== "SUCCESS" && (
+            notificationState !== "SUCCESS" && (
               <div className={classes.product_bid_container}>
-                {userDataState ? (
+                {isLoggedIn ? (
                   <React.Fragment>
                     <input
-                      onChange={(ev) => setBidPrice(ev.target.value)}
+                      onChange={handleBidPrice}
                       className={classes.bid_input}
                       type="number"
                       placeholder={`Enter $${
-                        productBidHistory.highestBid || product.start_price
+                        highestBid || startPrice
                       } or higher`}
                     />
 
@@ -229,6 +285,7 @@ const ProductOverviewPage = () => {
                     <img src={exclamationMark} alt="exclamation mark" />
                   </div>
                 )}
+
                 {error && (
                   <div className={classes.bid_high_error}>
                     <p>{error}</p>{" "}
@@ -237,14 +294,19 @@ const ProductOverviewPage = () => {
                 )}
               </div>
             )}
-
+          {!isAvailable && (
+            <div className={classes.user_owner}>
+              <p>You can not place a bid on your own product</p>{" "}
+              <img src={exclamationMark} alt="exclamation mark" />
+            </div>
+          )}
           <div className={classes.products_tabs}>
             <p className={classes.products_tab_active} onClick={() => {}}>
               Details
             </p>
           </div>
           <div className={classes.products_container}>
-            <p className={classes.paragraph}>{product.description}</p>
+            <p className={classes.paragraph}>{description}</p>
           </div>
         </div>
       </div>

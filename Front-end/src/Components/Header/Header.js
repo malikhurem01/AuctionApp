@@ -3,10 +3,10 @@ import React, { useContext } from "react";
 import SocialMediaIcons from "../UI/SocialMediaIcons";
 import NavigationList from "./Navigation/NavigationList";
 
-import AuthContext from "../../Store/auth-context";
+import AuthContext from "../../Store/Context-API/auth-context";
 
-import searchIcon from "../../Assets/searchIconSvg.svg";
-import logo from "../../Assets/auction-app-logo.svg";
+import searchIcon from "../../Assets/Svg/searchIconSvg.svg";
+import logo from "../../Assets/Svg/auction-app-logo.svg";
 
 import classes from "./Header.module.css";
 
@@ -19,6 +19,8 @@ const Header = () => {
     window.location.href.includes("/login") ||
     window.location.href.includes("/register");
 
+  let highlightNav = window.location.href.includes("shop") ? "shop" : "home";
+
   return (
     <React.Fragment>
       <div className={isHidden ? classes.header_container : " "}>
@@ -28,7 +30,7 @@ const Header = () => {
             {user ? (
               <div className={classes.header_greeting}>
                 Hi, &nbsp;
-                {user.first_name + " " + user.last_name}
+                {user.firstName + " " + user.lastName}
               </div>
             ) : (
               <div className={classes.login_buttons}>
@@ -68,7 +70,7 @@ const Header = () => {
                     <img src={searchIcon} alt="search button" />
                   </span>
                 </div>
-                <NavigationList highlight={"home"} />
+                <NavigationList highlight={highlightNav} />
               </React.Fragment>
             )}
           </div>

@@ -1,17 +1,28 @@
-const calculateSQLDaysRemaining = (dateEnd) => {
-  const jsDate = dateEnd.split("-");
-  const endDate = new Date(jsDate[0], jsDate[1], jsDate[2]);
+import convert from "./convert";
 
-  let dayOfMonth = new Date().getDate();
-  let month = new Date().getMonth() + 1;
-  let year = new Date().getFullYear();
+const calculateDaysRemaining = (date = null, dateEnd) => {
+  let nowDate;
+  if (!date) {
+    let dayOfMonth, month, year;
 
-  const nowDate = new Date(year, month, dayOfMonth);
+    dayOfMonth = new Date().getDate();
+    month = new Date().getMonth() + 1;
+    year = new Date().getFullYear();
+
+    nowDate = new Date(year, month, dayOfMonth);
+  } else {
+    nowDate = convert.convertToJSDate(date);
+  }
+  const endDate = convert.convertToJSDate(dateEnd);
+
   const nowDateTime = nowDate.getTime();
   const endDateTime = endDate.getTime();
+
   const ONE_DAY = 1000 * 60 * 60 * 24;
+
   const difference = Math.abs(endDateTime - nowDateTime);
+
   return Math.round(difference / ONE_DAY);
 };
 
-export default calculateSQLDaysRemaining;
+export default calculateDaysRemaining;

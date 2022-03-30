@@ -1,15 +1,17 @@
-package com.internship.AuctionApp.Authentication;
+package com.internship.AuctionApp.authentication;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.internship.AuctionApp.DTOs.JwtDTO;
 import com.internship.AuctionApp.DTOs.UserDTO;
+import com.internship.AuctionApp.Exceptions.JWTException;
 import com.internship.AuctionApp.Exceptions.PasswordNotValidException;
+import com.internship.AuctionApp.Exceptions.ServiceException;
 import com.internship.AuctionApp.Exceptions.UserExistsException;
 import com.internship.AuctionApp.Models.User;
 import com.internship.AuctionApp.services.AuthenticationService;
 import com.internship.AuctionApp.services.UserServiceImpl;
-import com.internship.AuctionApp.Configuration.JWTConfig;
+import com.internship.AuctionApp.configuration.JWTConfig;
 import com.internship.AuctionApp.utils.JWTDecode;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -29,7 +31,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -67,9 +68,15 @@ public class AuthenticationController {
         User user = null;
         try {
             user = userServiceImpl.loadUserByUsername(username);
-        } catch (UsernameNotFoundException exc) {
-            logger.error(exc.getMessage());
-            return ResponseEntity.badRequest().build();
+        } catch (UsernameNotFoundException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         final UserDTO userDTO = new UserDTO(user);
         System.out.println(userDTO.getEmail());
@@ -84,21 +91,35 @@ public class AuthenticationController {
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword())
             );
-        } catch (BadCredentialsException exception) {
-            logger.error(exception.getMessage());
-            return ResponseEntity.badRequest().build();
-        } catch (Exception exception) {
-            logger.error(exception.getMessage());
-            return ResponseEntity.badRequest().build();
+        } catch (BadCredentialsException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         final User user = (User) authentication.getPrincipal();
 
-        final String access_token = userServiceImpl.generateToken(user.getUsername(),
-                jwtConfig.getAccessTokenExpireTime(), request.getRequestURL().toString());
-        final String refresh_token = userServiceImpl.generateToken(user.getUsername(),
-                jwtConfig.getRefreshTokenExpireTime(), request.getRequestURL().toString());
-
+        String access_token = null;
+        String refresh_token = null;
+        try {
+            access_token = userServiceImpl.generateToken(user.getUsername(),
+                    jwtConfig.getAccessTokenExpireTime(), request.getRequestURL().toString());
+        } catch (JWTException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        try {
+            refresh_token = userServiceImpl.generateToken(user.getUsername(),
+                    jwtConfig.getRefreshTokenExpireTime(), request.getRequestURL().toString());
+        } catch (JWTException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         final JwtDTO jwtDTO = new JwtDTO(access_token, refresh_token);
@@ -107,7 +128,7 @@ public class AuthenticationController {
 
     @PostMapping("/auth/refresh")
     public ResponseEntity<?> refreshToken(final HttpServletRequest request,
-                                          final HttpServletResponse response) throws IOException {
+                                          final HttpServletResponse response) throws Exception {
         final String authorizationHeader = request.getHeader(AUTHORIZATION);
         String refresh_token = null, new_access_token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith(jwtConfig.getTokenPrefix())) {
@@ -118,16 +139,16 @@ public class AuthenticationController {
                 new_access_token = userServiceImpl.generateToken(user.getUsername(),
                         jwtConfig.getAccessTokenExpireTime(), request.getRequestURL().toString());
                 refresh_token = authorizationHeader.substring(jwtConfig.getTokenPrefix().length());
-            } catch (Exception exc) {
-                logger.error(exc.getMessage());
-                response.setHeader(HttpHeaders.EXPIRES, exc.getMessage());
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                response.setHeader(HttpHeaders.EXPIRES, e.getMessage());
                 response.setStatus(FORBIDDEN.value());
                 response.setContentType(APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), exc.getMessage());
+                new ObjectMapper().writeValue(response.getOutputStream(), e.getMessage());
             }
         } else {
             logger.error("Refresh token not found");
-            throw new RuntimeException("Refresh token not found!");
+            throw new Exception("Refresh token not found!");
         }
         final JwtDTO jwtDTO = new JwtDTO(new_access_token, refresh_token);
         return ResponseEntity.ok().body(jwtDTO);
@@ -138,12 +159,18 @@ public class AuthenticationController {
         User registeredUser = null;
         try {
             registeredUser = authenticationService.registerUser(request);
-        } catch (PasswordNotValidException exception) {
-            return new ResponseEntity<PasswordNotValidException>(HttpStatus.BAD_REQUEST);
-        } catch (UserExistsException exception) {
-            return new ResponseEntity<UserExistsException>(HttpStatus.CONFLICT);
-        } catch (Exception exception) {
-            return ResponseEntity.internalServerError().body(exception.getMessage());
+        } catch (PasswordNotValidException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (UserExistsException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         final UserDTO userDTO = new UserDTO(registeredUser);
         return ResponseEntity.ok().body(userDTO);

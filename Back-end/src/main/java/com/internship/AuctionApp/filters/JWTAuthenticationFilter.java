@@ -1,9 +1,12 @@
-package com.internship.AuctionApp.Filters;
+package com.internship.AuctionApp.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.internship.AuctionApp.Exceptions.JWTException;
 import com.internship.AuctionApp.Models.User;
-import com.internship.AuctionApp.Configuration.JWTConfig;
+import com.internship.AuctionApp.configuration.JWTConfig;
 import com.internship.AuctionApp.services.UserServiceImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,7 +40,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationException {
         final String username = request.getParameter("username");
         final String password = request.getParameter("password");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
@@ -45,16 +49,29 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication authentication)
+            throws IOException {
         final User user = (User) authentication.getPrincipal();
 
-        final String access_token = userServiceImpl.generateToken(user.getUsername(),
-                jwtConfig.getAccessTokenExpireTime(),
-                request.getRequestURL().toString());
-
-        final String refresh_token = userServiceImpl.generateToken(user.getUsername(),
-                jwtConfig.getRefreshTokenExpireTime(),
-                request.getRequestURL().toString());
+        String access_token = null;
+        String refresh_token = null;
+        try {
+            access_token = userServiceImpl.generateToken(user.getUsername(),
+                    jwtConfig.getAccessTokenExpireTime(),
+                    request.getRequestURL().toString());
+        } catch (JWTException e) {
+            logger.error(e.getMessage());
+        }
+        try {
+            refresh_token = userServiceImpl.generateToken(user.getUsername(),
+                    jwtConfig.getRefreshTokenExpireTime(),
+                    request.getRequestURL().toString());
+        } catch (JWTException e) {
+            logger.error(e.getMessage());
+        }
 
         final Map<String, String> tokens = new HashMap<>();
         tokens.put(ACCESS_TOKEN, access_token);

@@ -1,5 +1,6 @@
 package com.internship.AuctionApp.services;
 
+import com.internship.AuctionApp.Exceptions.ServiceException;
 import com.internship.AuctionApp.Models.Image;
 import com.internship.AuctionApp.Models.Product;
 import com.internship.AuctionApp.Repositories.ImageRepository;
@@ -20,6 +21,12 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public List<Image> findAllByProductId(final Product product) {
-        return imageRepository.findAllByProduct(product);
+        List<Image> images = null;
+        try {
+            images = imageRepository.findAllByProduct(product);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
+        return images;
     }
 }

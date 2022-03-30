@@ -2,7 +2,7 @@ package com.internship.AuctionApp.utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.internship.AuctionApp.Configuration.JWTConfig;
+import com.internship.AuctionApp.configuration.JWTConfig;
 
 public class JWTDecode {
 

@@ -3,7 +3,7 @@ package com.internship.AuctionApp.services;
 import com.internship.AuctionApp.Exceptions.PasswordNotValidException;
 import com.internship.AuctionApp.Exceptions.ServiceException;
 import com.internship.AuctionApp.Exceptions.UserExistsException;
-import com.internship.AuctionApp.Authentication.UserCreateRequest;
+import com.internship.AuctionApp.authentication.UserCreateRequest;
 import com.internship.AuctionApp.Models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,12 +33,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User registeredUser = null;
         try {
             registeredUser = userServiceImpl.registerUser(newUser);
-        } catch (PasswordNotValidException exception) {
-            throw new PasswordNotValidException();
-        } catch (UserExistsException exception) {
-            throw new UserExistsException();
-        } catch (ServiceException exception) {
-            throw new ServiceException(exception.getMessage());
+        } catch (PasswordNotValidException e) {
+            throw new PasswordNotValidException(e.getMessage());
+        } catch (UserExistsException e) {
+            throw new UserExistsException(e.getMessage());
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
         }
         return registeredUser;
     }
