@@ -1,5 +1,6 @@
 package com.internship.AuctionApp.services;
 
+import com.internship.AuctionApp.DTOs.UserDTO;
 import com.internship.AuctionApp.Exceptions.PasswordNotValidException;
 import com.internship.AuctionApp.Exceptions.ServiceException;
 import com.internship.AuctionApp.Exceptions.UserExistsException;
@@ -21,7 +22,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public User registerUser(final UserCreateRequest request) throws PasswordNotValidException, UserExistsException {
+    public UserDTO registerUser(final UserCreateRequest request) throws PasswordNotValidException, UserExistsException {
         User newUser = new User.UserBuilder()
                 .setFirstName(request.getFirstName())
                 .setLastName(request.getLastName())
@@ -30,9 +31,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .setCreatedAt(new Timestamp(System.currentTimeMillis()))
                 .setUpdatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        User registeredUser = null;
         try {
-            registeredUser = userServiceImpl.registerUser(newUser);
+             return userServiceImpl.registerUser(newUser);
         } catch (PasswordNotValidException e) {
             throw new PasswordNotValidException(e.getMessage());
         } catch (UserExistsException e) {
@@ -40,6 +40,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
-        return registeredUser;
     }
 }

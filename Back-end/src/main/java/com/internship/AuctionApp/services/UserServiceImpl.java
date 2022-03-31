@@ -1,6 +1,7 @@
 package com.internship.AuctionApp.services;
 
 import com.auth0.jwt.JWT;
+import com.internship.AuctionApp.DTOs.UserDTO;
 import com.internship.AuctionApp.Exceptions.JWTException;
 import com.internship.AuctionApp.Exceptions.PasswordNotValidException;
 import com.internship.AuctionApp.Exceptions.ServiceException;
@@ -11,6 +12,7 @@ import com.internship.AuctionApp.security.PasswordConfig;
 import com.internship.AuctionApp.utils.JWTSignAlgorithm;
 import com.internship.AuctionApp.utils.ValidatePassword;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -21,9 +23,7 @@ import java.util.Date;
 public class UserServiceImpl implements UserDetailsService, UserService {
 
     private final AppUserRepository appUserRepository;
-
     private final PasswordConfig passwordConfig;
-
     private final String USER_NOT_FOUND_MESSAGE = "User with email %s not found.";
 
     @Autowired
@@ -34,31 +34,33 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public User loadUserByUsername(final String email) throws UsernameNotFoundException {
-        Boolean exists = appUserRepository.findByEmail(email).isPresent();
-        User user;
-        user = appUserRepository.findByEmail(email).orElseThrow(() ->
+        return appUserRepository.findByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, email)));
-        return user;
     }
 
     @Override
-    public User registerUser(final User user) throws UserExistsException, PasswordNotValidException, RuntimeException {
+    public UserDTO retrieveUser(final String email) throws Exception {
+        return new UserDTO(this.loadUserByUsername(email));
+    }
+
+    @Override
+    public UserDTO registerUser(final User user) throws UserExistsException, PasswordNotValidException, ServiceException {
         final Boolean exists = appUserRepository.findByEmail(user.getEmail()).isPresent();
         if (exists) {
             throw new UserExistsException("User already exists");
         }
-        Boolean isValid = ValidatePassword.isValid(user.getPassword());
+        final Boolean isValid = ValidatePassword.isValid(user.getPassword());
         if (!isValid) {
             throw new PasswordNotValidException("Password or email not valid");
         }
         final String encodedPassword = passwordConfig.passwordEncoder().encode(user.getPassword());
         user.setPassword(encodedPassword);
         try {
-            appUserRepository.save(user);
+            User registeredUser = appUserRepository.save(user);
+            return new UserDTO(registeredUser);
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
-        return user;
     }
 
     @Override
@@ -73,5 +75,4 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             throw new JWTException(e.getMessage());
         }
     }
-
 }

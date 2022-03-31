@@ -1,7 +1,7 @@
 package com.internship.AuctionApp.Exceptions;
 
 public class EntityNotFoundException extends RuntimeException {
-    public EntityNotFoundException(){
+    public EntityNotFoundException() {
         super("Entity does not exist.");
     }
 

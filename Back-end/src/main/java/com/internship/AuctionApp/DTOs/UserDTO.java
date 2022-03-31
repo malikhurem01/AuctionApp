@@ -1,8 +1,6 @@
 package com.internship.AuctionApp.DTOs;
 
 import com.internship.AuctionApp.Models.User;
-import lombok.Getter;
-import lombok.Setter;
 
 public class UserDTO {
     private Long userId;

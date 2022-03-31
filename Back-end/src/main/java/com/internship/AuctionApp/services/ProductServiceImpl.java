@@ -1,8 +1,11 @@
 package com.internship.AuctionApp.services;
 
+import com.internship.AuctionApp.DTOs.ProductDTO;
 import com.internship.AuctionApp.Exceptions.EntityNotFoundException;
 import com.internship.AuctionApp.Exceptions.ServiceException;
 import com.internship.AuctionApp.Models.Product;
+import com.internship.AuctionApp.Products.ProductFilterRequest;
+import com.internship.AuctionApp.Products.ProductFilterResponse;
 import com.internship.AuctionApp.Repositories.ProductRepository;
 import org.hibernate.action.internal.EntityActionVetoException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +39,30 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<Product> findAllProductsWithPagination(final int offset, final int pageSize, final String sort) {
-
-        Page<Product> products = null;
         try {
-            products = productRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Direction.ASC, sort)));
+            return productRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(Sort.Direction.ASC, sort)));
         } catch (Exception e) {
             throw new ServiceException((e.getMessage()));
         }
-        return products;
+    }
+
+    @Override
+    public ProductFilterResponse filter(ProductFilterRequest productFilterRequest) {
+        try {
+            Page<Product> productPage = productRepository.findAll(
+                    PageRequest.of(productFilterRequest.getOffset(),
+                                    productFilterRequest.getPageSize())
+                            .withSort(Sort.by(Sort.Direction.ASC, productFilterRequest.getSort())));
+            final List<ProductDTO> productDTOList = productPage
+                    .stream()
+                    .map(product -> new ProductDTO(product, null)).toList();
+            final ProductFilterResponse productFilterResponse = new ProductFilterResponse(
+                    productDTOList,
+                    productFilterRequest.getPageSize(),
+                    productDTOList.size());
+            return productFilterResponse;
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 }

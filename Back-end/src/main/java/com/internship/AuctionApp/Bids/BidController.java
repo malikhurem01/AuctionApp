@@ -1,5 +1,6 @@
 package com.internship.AuctionApp.Bids;
 
+import com.internship.AuctionApp.DTOs.BidDTO;
 import com.internship.AuctionApp.authentication.AuthenticationController;
 import com.internship.AuctionApp.DTOs.BidHistoryDTO;
 import com.internship.AuctionApp.Exceptions.BidRequestNotValidException;
@@ -22,8 +23,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequestMapping(path = "/api/v1")
 @CrossOrigin(origins = {"http://localhost:3000", "https://auction-app-internship-fr.herokuapp.com/"})
 public class BidController {
-    private final static Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
+    private final static Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
     private final BidService bidService;
 
     @Autowired
@@ -36,10 +37,10 @@ public class BidController {
         if (id == null) {
             return ResponseEntity.badRequest().build();
         }
-        final Long product_id = Long.valueOf(id);
-        BidHistoryDTO bidResponse;
         try {
-            bidResponse = bidService.getBidHistory(product_id);
+            final Long product_id = Long.valueOf(id);
+            BidHistoryDTO bidHistoryDTO = bidService.getBidHistory(product_id);
+            return new ResponseEntity<>(bidHistoryDTO, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -50,15 +51,14 @@ public class BidController {
             logger.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(bidResponse, HttpStatus.OK);
     }
 
     @PostMapping(path = "/post/bid")
     public ResponseEntity<?> bidOnProduct(@RequestBody final BidCreateRequest bidCreateRequest,
                                           final HttpServletRequest request) throws Exception {
-        Bid bid = null;
         try {
-            bid = bidService.createBid(bidCreateRequest, request.getHeader(AUTHORIZATION));
+            BidDTO bid = bidService.createBid(bidCreateRequest, request.getHeader(AUTHORIZATION));
+            return ResponseEntity.ok().body(bid);
         } catch (BidRequestNotValidException e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -69,6 +69,5 @@ public class BidController {
             logger.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.ok().body(bid);
     }
 }
