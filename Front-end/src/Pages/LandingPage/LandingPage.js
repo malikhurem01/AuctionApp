@@ -32,7 +32,7 @@ const categories = [
 
 const LandingPage = () => {
   // Context hook
-  const { isDataFetched, isDataFetchedHandler } = useContext(AppContext);
+  const { isDataLoading, isDataLoadingHandler } = useContext(AppContext);
 
   //States
   const [newArrivalsActive, setNewArrivalsActive] = useState(true);
@@ -80,11 +80,11 @@ const LandingPage = () => {
   const handleProductFetch = useCallback(
     async (sort, offset) => {
       //SET LOADING SCREEN
-      isDataFetchedHandler(false);
+      isDataLoadingHandler(true);
 
       //GET REQUEST
       return productService.fetchAllProducts(sort, offset).then((response) => {
-        const productsPage = response.data.products.content;
+        const productsPage = response.data.productDTOPage;
         //CHECK IF THERE ARE ANY PRODUCTS
         if (productsPage.length === 0) {
           setAllProductsFetched(true);
@@ -95,13 +95,13 @@ const LandingPage = () => {
             const updatedProducts = [...prevProducts, ...productsPage];
             return updatedProducts;
           });
-          setAdvertProduct(() => productsPage[0]);
+          setAdvertProduct(() => productsPage[0].product);
         }
         //REMOVE LOADING SCREEN
-        isDataFetchedHandler(true);
+        isDataLoadingHandler(false);
       });
     },
-    [isDataFetchedHandler]
+    [isDataLoadingHandler]
   );
 
   useEffect(() => {
@@ -125,7 +125,7 @@ const LandingPage = () => {
           </ul>
         </div>
         <div className={classes.product}>
-          {isDataFetched && (
+          {!isDataLoading && (
             <React.Fragment>
               <div className={classes.advertisement_product_about}>
                 <h3>{title}</h3>

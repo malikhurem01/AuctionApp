@@ -33,10 +33,10 @@ import {
 } from "./Data/Routes";
 
 const App = () => {
-  const { isDataFetched } = useContext(AppContext);
+  const { isDataLoading } = useContext(AppContext);
   return (
     <PageLayoutWrapper>
-      {!isDataFetched && <LoadingModal />}
+      {isDataLoading && <LoadingModal />}
       <BrowserRouter>
         <Switch>
           <Route exact path={index}>

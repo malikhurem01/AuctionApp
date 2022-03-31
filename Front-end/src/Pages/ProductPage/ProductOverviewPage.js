@@ -30,6 +30,8 @@ const ProductOverviewPage = () => {
 
   const INITIAL_PRODUCT_STATE = {};
 
+  const INITIAL_IMAGES_SATTE = [];
+
   //STATES
   const [bidPrice, setBidPrice] = useState(null);
   const [isAvailable, setIsAvailable] = useState(true);
@@ -38,7 +40,7 @@ const ProductOverviewPage = () => {
   const [weeks, setWeeks] = useState(0);
   const [days, setDays] = useState(0);
   const [mainImage, setMainImage] = useState({});
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState(INITIAL_IMAGES_SATTE);
   const [product, setProduct] = useState(INITIAL_PRODUCT_STATE);
   const [bidNotification, setBidNotification] = useState(
     INITIAL_BID_NOTIFICATION_STATE
@@ -54,7 +56,7 @@ const ProductOverviewPage = () => {
   //HOOKS
   const query = useQuery();
   const { userDataState } = useContext(AuthContext);
-  const { isDataFetchedHandler } = useContext(AppContext);
+  const { isDataLoadingHandler } = useContext(AppContext);
 
   const productIdParameter = query.get("productId");
 
@@ -96,14 +98,14 @@ const ProductOverviewPage = () => {
       bidPrice: bidPrice,
     };
     //DISPLAY LOADING SCREEN
-    isDataFetchedHandler(false);
+    isDataLoadingHandler(true);
     return (
       bidService
         .makeBid(access_token, data)
         //IF SUCCESS
         .then(({ data }) => {
           //SET NOTIFICATION
-          let userId = data.user.userId;
+          let userId = data.userDTO.userId;
           setBidNotification({
             notificationState: "SUCCESS",
             notificationMessage: SUCCESS_MESSAGE,
@@ -115,21 +117,19 @@ const ProductOverviewPage = () => {
             numberOfBids: numberOfBids + 1,
           });
           //SET LATEST BIDDER NOTIFICATION
-          if (userId === userDataState.userId) {
-            setIsUserLatestBidder(true);
-          }
+          setIsUserLatestBidder(true);
           //REMOVE LOADING SCREEN
-          isDataFetchedHandler(true);
+          isDataLoadingHandler(false);
         })
         //IF FAILURE
-        .catch(() => {
+        .catch((err) => {
           //SET ERROR NOTIFICATION
           setBidNotification({
             notificationState: "ERROR",
             notificationMessage: ERROR_MESSAGE,
           });
           //REMOVE LOADING SCREEN
-          isDataFetchedHandler(true);
+          isDataLoadingHandler(false);
         })
     );
   };
@@ -147,7 +147,7 @@ const ProductOverviewPage = () => {
 
   const handleFetchProduct = useCallback(async () => {
     //SET LOADING SCREEN
-    isDataFetchedHandler(false);
+    isDataLoadingHandler(true);
 
     //GET REQUEST
     return productService
@@ -164,10 +164,10 @@ const ProductOverviewPage = () => {
             setIsAvailable(false);
           }
         }
-        isDataFetchedHandler(true);
+        isDataLoadingHandler(false);
       });
   }, [
-    isDataFetchedHandler,
+    isDataLoadingHandler,
     handleTimeRemaining,
     productIdParameter,
     userDataState,

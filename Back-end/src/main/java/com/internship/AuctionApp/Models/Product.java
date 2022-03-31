@@ -1,14 +1,16 @@
 package com.internship.AuctionApp.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "product")
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Product {
 
     @Id
@@ -107,6 +109,7 @@ public class Product {
             this.user = user;
             return this;
         }
+
         public ProductBuilder setMainImageUrl(String url) {
             this.imageMainUrl = url;
             return this;

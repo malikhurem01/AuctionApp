@@ -1,10 +1,8 @@
 import React, { useContext, useState } from "react";
-import useQuery from "../../../Hooks/useQuery";
 import { setToken } from "../../../Services/authService";
 
 import userService from "../../../Services/userService";
 import AppContext from "../../../Store/Context-API/app-context";
-import Modal from "../../UI/Modal";
 
 import { WRONG_CREDENTIALS_ERROR } from "../../../Data/Constants/login";
 
@@ -12,8 +10,7 @@ import classes from "./Login.module.css";
 
 const LoginForm = () => {
   //HOOKS
-  const { isDataFetchedHandler } = useContext(AppContext);
-  const query = useQuery();
+  const { isDataLoadingHandler } = useContext(AppContext);
 
   //STATES
   const [error, setError] = useState(false);
@@ -23,7 +20,7 @@ const LoginForm = () => {
     ev.preventDefault();
 
     //SET LOADING SCREEN
-    isDataFetchedHandler(false);
+    isDataLoadingHandler(true);
 
     //COLLECT LOGIN DATA
     let authData = {
@@ -48,7 +45,7 @@ const LoginForm = () => {
       })
       .catch(() => {
         //REMOVE LOADING SCREEN
-        isDataFetchedHandler(true);
+        isDataLoadingHandler(false);
 
         //DISPLAY ERROR
         setError(WRONG_CREDENTIALS_ERROR);
@@ -57,15 +54,6 @@ const LoginForm = () => {
 
   return (
     <div className={classes.container}>
-      {query.get("success") && (
-        <Modal title={"Success!"} message={"Please log in to continue"} />
-      )}
-      {query.get("logout") && (
-        <Modal
-          title={"Goodbye!"}
-          message={"You have successfully logged out"}
-        />
-      )}
       <div className={classes.heading}>
         <h5>Login</h5>
       </div>

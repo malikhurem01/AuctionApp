@@ -1,24 +1,24 @@
 import React, { useCallback, useState } from "react";
 
 const AppContext = React.createContext({
-  isDataFetched: null,
-  isDataFetchedHandler: () => {},
+  isDataLoading: null,
+  isDataLoadingHandler: () => {},
 });
 
 export default AppContext;
 
 export const AppContextProvider = ({ children }) => {
-  const [isDataFetched, setIsDataFetched] = useState(true);
+  const [isDataLoading, setIsDataLoading] = useState(false);
 
-  const isDataFetchedHandler = useCallback((state) => {
-    setIsDataFetched(state);
+  const isDataLoadingHandler = useCallback((state) => {
+    setIsDataLoading(state);
   }, []);
 
   return (
     <AppContext.Provider
       value={{
-        isDataFetched: isDataFetched,
-        isDataFetchedHandler: isDataFetchedHandler,
+        isDataLoading: isDataLoading,
+        isDataLoadingHandler: isDataLoadingHandler,
       }}
     >
       {children}
