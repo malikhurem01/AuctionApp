@@ -1,5 +1,6 @@
 package com.internship.AuctionApp.Models;
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -17,13 +18,13 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ID_GENERATOR")
     @SequenceGenerator(name = "ID_GENERATOR", sequenceName = "SEQUENCE_GENERATOR", allocationSize = 1)
     @Column(name = "id", nullable = false)
-    private Long user_id;
+    private Long userId;
 
-    @Column(columnDefinition = "TEXT")
-    private String first_name;
+    @Column(name = "first_name", columnDefinition = "TEXT")
+    private String firstName;
 
-    @Column(columnDefinition = "TEXT")
-    private String last_name;
+    @Column(name = "last_name", columnDefinition = "TEXT")
+    private String lastName;
 
     @Column(columnDefinition = "TEXT")
     private String password;
@@ -31,51 +32,58 @@ public class User implements UserDetails {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String email;
 
-    @Column(nullable = true, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String gender;
 
-    @Column(nullable = true, columnDefinition = "TEXT")
-    private String image_url;
+    @Column(name = "image_url", columnDefinition = "TEXT")
+    private String imageUrl;
 
-    @Column(nullable = true)
-    private Date birth_date;
+    @Column(name ="birth_date")
+    private Date birthDate;
 
-    @Column(nullable = true, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String country;
 
-    @Column(nullable = true, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String state;
 
-    @Column(nullable = true, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String city;
 
-    @Column(nullable = true, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String street;
 
-    @Column(nullable = true, columnDefinition = "TEXT")
-    private String zip_code;
+    @Column(name = "zip_code", columnDefinition = "TEXT")
+    private String zipCode;
 
-    @Column
-    private Timestamp created_at;
+    @Column(name = "created_at")
+    private Timestamp createdAt;
 
-    @Column
-    private Timestamp updated_at;
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
 
     public User(UserBuilder builder) {
-        this.first_name = builder.first_name;
-        this.last_name = builder.last_name;
+        this.firstName = builder.firstName;
+        this.lastName = builder.lastName;
         this.password = builder.password;
         this.email = builder.email;
         this.gender = builder.gender;
-        this.image_url = builder.image_url;
-        this.birth_date = builder.birth_date;
+        this.imageUrl = builder.imageUrl;
+        this.birthDate = builder.birthDate;
         this.country = builder.country;
         this.state = builder.state;
         this.city = builder.city;
         this.street = builder.street;
-        this.zip_code = builder.zip_code;
-        this.created_at = builder.created_at;
-        this.updated_at = builder.updated_at;
+        this.zipCode = builder.zipCode;
+        this.createdAt = builder.createdAt;
+        this.updatedAt = builder.updatedAt;
+    }
+
+    public User(User _user){
+        this.userId = _user.userId;
+        this.firstName = _user.firstName;
+        this.lastName = _user.lastName;
+        this.email = _user.email;
     }
 
     public User() {
@@ -83,34 +91,34 @@ public class User implements UserDetails {
     }
 
     public static class UserBuilder {
-        private int user_id;
-        private String first_name;
-        private String last_name;
+        private int userId;
+        private String firstName;
+        private String lastName;
         private String password;
         private String email;
         private String gender;
-        private String image_url;
-        private Date birth_date;
+        private String imageUrl;
+        private Date birthDate;
         private String country;
         private String state;
         private String city;
         private String street;
-        private String zip_code;
-        private Timestamp created_at;
-        private Timestamp updated_at;
+        private String zipCode;
+        private Timestamp createdAt;
+        private Timestamp updatedAt;
 
-        public UserBuilder setUser_id(int user_id) {
-            this.user_id = user_id;
+        public UserBuilder setUserId(int userId) {
+            this.userId = userId;
             return this;
         }
 
-        public UserBuilder setFirst_name(String first_name) {
-            this.first_name = first_name;
+        public UserBuilder setFirstName(String firstName) {
+            this.firstName = firstName;
             return this;
         }
 
-        public UserBuilder setLast_name(String last_name) {
-            this.last_name = last_name;
+        public UserBuilder setLastName(String lastName) {
+            this.lastName = lastName;
             return this;
         }
 
@@ -129,13 +137,13 @@ public class User implements UserDetails {
             return this;
         }
 
-        public UserBuilder setImage_url(String image_url) {
-            this.image_url = image_url;
+        public UserBuilder setImageUrl(String imageUrl) {
+            this.imageUrl = imageUrl;
             return this;
         }
 
-        public UserBuilder setBirth_date(Date birth_date) {
-            this.birth_date = birth_date;
+        public UserBuilder setBirthdate(Date birthDate) {
+            this.birthDate = birthDate;
             return this;
         }
 
@@ -159,19 +167,19 @@ public class User implements UserDetails {
             return this;
         }
 
-        public UserBuilder setZip_code(String zip_code) {
-            this.zip_code = zip_code;
+        public UserBuilder setZip_code(String zipCode) {
+            this.zipCode = zipCode;
             return this;
         }
 
-        public UserBuilder setCreated_at(Timestamp created_at) {
-            this.created_at = created_at;
+        public UserBuilder setCreatedAt(Timestamp createdAt) {
+            this.createdAt = createdAt;
             return this;
         }
 
 
-        public UserBuilder setUpdated_at(Timestamp updated_at) {
-            this.updated_at = updated_at;
+        public UserBuilder setUpdatedAt(Timestamp updatedAt) {
+            this.updatedAt = updatedAt;
             return this;
         }
 
@@ -180,24 +188,24 @@ public class User implements UserDetails {
         }
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public Long getUserId() {
+        return userId;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getLast_name() {
-        return last_name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public void setPassword(String password) {
@@ -220,20 +228,20 @@ public class User implements UserDetails {
         this.gender = gender;
     }
 
-    public String getImage_url() {
-        return image_url;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
-    public Date getBirth_date() {
-        return birth_date;
+    public Date getBirthDate() {
+        return birthDate;
     }
 
-    public void setBirth_date(Date birth_date) {
-        this.birth_date = birth_date;
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
     }
 
     public String getCountry() {
@@ -268,28 +276,28 @@ public class User implements UserDetails {
         this.street = street;
     }
 
-    public String getZip_code() {
-        return zip_code;
+    public String getZipCode() {
+        return zipCode;
     }
 
-    public void setZip_code(String zip_code) {
-        this.zip_code = zip_code;
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
-    public Timestamp getCreated_at() {
-        return created_at;
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(Timestamp created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public Timestamp getUpdated_at() {
-        return updated_at;
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(Timestamp updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override

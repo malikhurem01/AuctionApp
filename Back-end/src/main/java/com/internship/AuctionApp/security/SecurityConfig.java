@@ -1,6 +1,5 @@
 package com.internship.AuctionApp.security;
 
-import com.internship.AuctionApp.Models.User;
 import com.internship.AuctionApp.filters.JWTAuthenticationFilter;
 import com.internship.AuctionApp.filters.JWTAuthorizationFilter;
 import com.internship.AuctionApp.services.UserServiceImpl;
@@ -36,6 +35,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable();
         http.authorizeRequests().antMatchers("/api/v1/auth/users/current").authenticated();
         http.authorizeRequests().antMatchers("/api/v1/authenticate").permitAll();
+        http.authorizeRequests().antMatchers("/api/v1/get/products").permitAll();
+        http.authorizeRequests().antMatchers("/api/v1/get/product").permitAll();
+
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }

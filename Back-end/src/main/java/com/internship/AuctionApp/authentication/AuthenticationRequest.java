@@ -1,5 +1,8 @@
 package com.internship.AuctionApp.authentication;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class AuthenticationRequest {
     private String userName;
     private String password;

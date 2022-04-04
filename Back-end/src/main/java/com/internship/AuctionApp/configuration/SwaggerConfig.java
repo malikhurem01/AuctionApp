@@ -21,4 +21,5 @@ public class SwaggerConfig {
                 .paths(regex("/api.*"))
                 .build();
     }
+
 }

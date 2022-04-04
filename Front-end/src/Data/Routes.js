@@ -1,14 +1,15 @@
 const routes = {
-  index: '/',
-  shopProduct: '/shop/product/:productId',
-  shop: '/shop',
-  account: '/account',
-  termsAndConditions: '/terms-and-conditions',
-  aboutUs: '/about-us',
-  privacyAndPolicy: '/privacy-and-policy',
-  logout: '/logout',
-  login: '/login',
-  register: '/register'
+  index: "/",
+  shopProduct: "/shop/product",
+  shop: "/shop",
+  account: "/account",
+  termsAndConditions: "/terms-and-conditions",
+  aboutUs: "/about-us",
+  privacyAndPolicy: "/privacy-and-policy",
+  logout: "/logout",
+  login: "/login",
+  register: "/register",
+  error: "*",
 };
 
-export default routes;
+module.exports = routes;

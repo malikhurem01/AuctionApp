@@ -1,23 +1,61 @@
-import React from 'react';
+import React, { useState, useContext } from "react";
 
-import userService from '../../../Services/userService';
+import userService from "../../../Services/userService";
 
-import classes from './Registration.module.css';
+import validatePassword from "../../../Utils/validatePassword";
+
+import {
+  ERROR_PASSWORD,
+  ERROR_USER,
+  SERVER_ERROR,
+} from "../../../Data/Constants/registration";
+
+import classes from "./Registration.module.css";
+import AppContext from "../../../Store/Context-API/app-context";
 
 const RegistrationForm = () => {
-  const handleSubmit = async ev => {
+  //HOOKS
+  const { isDataFetchedHandler } = useContext(AppContext);
+
+  //STATES
+  const [error, setError] = useState(false);
+
+  //HANDLERS
+  const handleSubmit = async (ev) => {
     ev.preventDefault();
-    let registrationData = {
-      first_name: ev.target.elements['firstName'].value,
-      last_name: ev.target.elements['lastName'].value,
-      email: ev.target.elements['email'].value,
-      password: ev.target.elements['password'].value
+    //SET LOADING SCREEN
+    isDataFetchedHandler(false);
+
+    //COLLECT REGISTRATION DATA
+    const registrationData = {
+      firstName: ev.target.elements["firstName"].value,
+      lastName: ev.target.elements["lastName"].value,
+      email: ev.target.elements["email"].value,
+      password: ev.target.elements["password"].value,
     };
 
+    const { password } = registrationData;
+
+    //VALIDATE
+    if (!validatePassword(password)) {
+      setError(ERROR_PASSWORD);
+      isDataFetchedHandler(true);
+      return;
+    }
+
+    //MAKE A POST REQUEST
     return userService
       .register(registrationData)
-      .then(() => window.location.replace('/login'))
-      .catch(err => console.log(err));
+      .then(() => {
+        window.location.replace("/login?success=true");
+      })
+      .catch(({ response }) => {
+        //REMOVE LOADING SCREEN
+        isDataFetchedHandler(true);
+        if (response.status === 409) setError(ERROR_USER);
+        else if (response.status === 400) setError(ERROR_PASSWORD);
+        else if (response.status === 500) setError(SERVER_ERROR);
+      });
   };
   return (
     <div className={classes.container}>
@@ -29,6 +67,7 @@ const RegistrationForm = () => {
         <div>
           <label htmlFor="firstName">First Name</label>
           <input
+            required
             id="firstName"
             name="firstName"
             type="text"
@@ -37,11 +76,18 @@ const RegistrationForm = () => {
         </div>
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input id="lastName" name="lastName" type="text" placeholder="Doe" />
+          <input
+            required
+            id="lastName"
+            name="lastName"
+            type="text"
+            placeholder="Doe"
+          />
         </div>
         <div>
           <label htmlFor="email">Enter Email</label>
           <input
+            required
             id="email"
             name="email"
             type="email"
@@ -51,6 +97,7 @@ const RegistrationForm = () => {
         <div>
           <label htmlFor="password">Password</label>
           <input
+            required
             id="password"
             name="password"
             type="password"
@@ -59,13 +106,18 @@ const RegistrationForm = () => {
           <div className={classes.register_btn}>
             <input type="submit" value="register" />
           </div>
-          <div className={classes.alternative}>
-            <p>
-              Already have an account? <a href="/login">Login</a>
-            </p>
-          </div>
         </div>
       </form>
+      {error && (
+        <div className={classes.registration_error}>
+          <p>{error}</p>
+        </div>
+      )}
+      <div className={classes.alternative}>
+        <p>
+          Already have an account? <a href="/login">Login</a>
+        </p>
+      </div>
     </div>
   );
 };
