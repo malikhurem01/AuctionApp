@@ -5,22 +5,22 @@ import com.internship.AuctionApp.DTOs.ProductDTO;
 import java.util.List;
 
 public class ProductFilterResponse {
-    private List<ProductDTO> productDTOPage;
+    private List<ProductDTO> products;
     private int total;
     private int pageSize;
 
-    public ProductFilterResponse(List<ProductDTO> productDTOPage, int pageSize, int total) {
-        this.productDTOPage = productDTOPage;
+    public ProductFilterResponse(List<ProductDTO> products, int pageSize, int total) {
+        this.products = products;
         this.total = total;
         this.pageSize = pageSize;
     }
 
-    public List<ProductDTO> getProductDTOPage() {
-        return productDTOPage;
+    public List<ProductDTO> getProducts() {
+        return products;
     }
 
-    public void setProductDTOPage(List<ProductDTO> productDTOPage) {
-        this.productDTOPage = productDTOPage;
+    public void setProducts(List<ProductDTO> products) {
+        this.products = products;
     }
 
     public int getTotal() {

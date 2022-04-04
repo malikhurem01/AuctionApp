@@ -16,22 +16,6 @@ import classes from "./ProductOverviewPage.module.css";
 import AppContext from "../../Store/Context-API/app-context";
 
 const ProductOverviewPage = () => {
-  //INITIAL STATES
-  const INITIAL_BID_NOTIFICATION_STATE = {
-    notificationState: null,
-    notificationMessage: null,
-  };
-
-  const INITIAL_PRODUCT_HISTORY_STATE = {
-    latestBidderId: null,
-    highestBid: null,
-    numberOfBids: null,
-  };
-
-  const INITIAL_PRODUCT_STATE = {};
-
-  const INITIAL_IMAGES_SATTE = [];
-
   //STATES
   const [bidPrice, setBidPrice] = useState(null);
   const [isAvailable, setIsAvailable] = useState(true);
@@ -40,14 +24,17 @@ const ProductOverviewPage = () => {
   const [weeks, setWeeks] = useState(0);
   const [days, setDays] = useState(0);
   const [mainImage, setMainImage] = useState({});
-  const [images, setImages] = useState(INITIAL_IMAGES_SATTE);
-  const [product, setProduct] = useState(INITIAL_PRODUCT_STATE);
-  const [bidNotification, setBidNotification] = useState(
-    INITIAL_BID_NOTIFICATION_STATE
-  );
-  const [productBidHistory, setProductBidHistory] = useState(
-    INITIAL_PRODUCT_HISTORY_STATE
-  );
+  const [images, setImages] = useState([]);
+  const [product, setProduct] = useState({});
+  const [bidNotification, setBidNotification] = useState({
+    notificationState: null,
+    notificationMessage: null,
+  });
+  const [productBidHistory, setProductBidHistory] = useState({
+    latestBidderId: null,
+    highestBid: null,
+    numberOfBids: null,
+  });
 
   const { notificationState, notificationMessage } = bidNotification;
   const { highestBid, numberOfBids } = productBidHistory;
@@ -105,7 +92,7 @@ const ProductOverviewPage = () => {
         //IF SUCCESS
         .then(({ data }) => {
           //SET NOTIFICATION
-          let userId = data.userDTO.userId;
+          let userId = data.user.userId;
           setBidNotification({
             notificationState: "SUCCESS",
             notificationMessage: SUCCESS_MESSAGE,

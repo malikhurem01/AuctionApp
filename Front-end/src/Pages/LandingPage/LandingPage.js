@@ -84,7 +84,7 @@ const LandingPage = () => {
 
       //GET REQUEST
       return productService.fetchAllProducts(sort, offset).then((response) => {
-        const productsPage = response.data.productDTOPage;
+        const productsPage = response.data.products;
         //CHECK IF THERE ARE ANY PRODUCTS
         if (productsPage.length === 0) {
           setAllProductsFetched(true);

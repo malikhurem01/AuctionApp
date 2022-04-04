@@ -53,13 +53,13 @@ public class ProductServiceImpl implements ProductService {
                     PageRequest.of(productFilterRequest.getOffset(),
                                     productFilterRequest.getPageSize())
                             .withSort(Sort.by(Sort.Direction.ASC, productFilterRequest.getSort())));
-            final List<ProductDTO> productDTOList = productPage
+            final List<ProductDTO> products = productPage
                     .stream()
                     .map(product -> new ProductDTO(product, null)).toList();
             final ProductFilterResponse productFilterResponse = new ProductFilterResponse(
-                    productDTOList,
+                    products,
                     productFilterRequest.getPageSize(),
-                    productDTOList.size());
+                    products.size());
             return productFilterResponse;
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());

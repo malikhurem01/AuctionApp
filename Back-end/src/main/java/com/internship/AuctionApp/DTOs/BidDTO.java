@@ -1,19 +1,17 @@
 package com.internship.AuctionApp.DTOs;
 
-import com.internship.AuctionApp.Models.Product;
-
 import java.sql.Timestamp;
 
 public class BidDTO {
     private Long id;
-    private UserDTO userDTO;
+    private UserDTO user;
     private ProductDTO productDTO;
     private float bidPrice;
     private Timestamp created_at;
 
-    public BidDTO(Long id, UserDTO userDTO, ProductDTO productDTO, float bidPrice, Timestamp created_at) {
+    public BidDTO(Long id, UserDTO user, ProductDTO productDTO, float bidPrice, Timestamp created_at) {
         this.id = id;
-        this.userDTO = userDTO;
+        this.user = user;
         this.productDTO = productDTO;
         this.bidPrice = bidPrice;
         this.created_at = created_at;
@@ -27,12 +25,12 @@ public class BidDTO {
         this.id = id;
     }
 
-    public UserDTO getUserDTO() {
-        return userDTO;
+    public UserDTO getUser() {
+        return user;
     }
 
-    public void setUserDTO(UserDTO userDTO) {
-        userDTO = userDTO;
+    public void setUser(UserDTO user) {
+        user = user;
     }
 
     public ProductDTO getProductDTO() {
