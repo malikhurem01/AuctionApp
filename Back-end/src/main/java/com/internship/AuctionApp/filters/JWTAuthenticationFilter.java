@@ -5,8 +5,6 @@ import com.internship.AuctionApp.Exceptions.JWTException;
 import com.internship.AuctionApp.Models.User;
 import com.internship.AuctionApp.configuration.JWTConfig;
 import com.internship.AuctionApp.services.UserServiceImpl;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,7 +12,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -26,11 +23,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-
     private final UserServiceImpl userServiceImpl;
-
     private final JWTConfig jwtConfig = new JWTConfig();
-
     private final String ACCESS_TOKEN = "access_token";
     private final String REFRESH_TOKEN = "refresh_token";
 

@@ -6,7 +6,6 @@ import com.internship.AuctionApp.DTOs.BidHistoryDTO;
 import com.internship.AuctionApp.Exceptions.BidRequestNotValidException;
 import com.internship.AuctionApp.Exceptions.EntityNotFoundException;
 import com.internship.AuctionApp.Exceptions.ServiceException;
-import com.internship.AuctionApp.Models.Bid;
 import com.internship.AuctionApp.services.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

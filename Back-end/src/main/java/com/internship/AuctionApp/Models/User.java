@@ -38,7 +38,7 @@ public class User implements UserDetails {
     @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
-    @Column(name ="birth_date")
+    @Column(name = "birth_date")
     private Date birthDate;
 
     @Column(columnDefinition = "TEXT")
@@ -79,7 +79,7 @@ public class User implements UserDetails {
         this.updatedAt = builder.updatedAt;
     }
 
-    public User(User _user){
+    public User(User _user) {
         this.userId = _user.userId;
         this.firstName = _user.firstName;
         this.lastName = _user.lastName;

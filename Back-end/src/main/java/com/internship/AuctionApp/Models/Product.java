@@ -2,11 +2,14 @@ package com.internship.AuctionApp.Models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -24,13 +27,29 @@ public class Product {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    @Column(name="image_main_url", columnDefinition = "TEXT")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonBackReference
+    private Category category;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "subcategory_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonBackReference
+    private Subcategory subcategory;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", orphanRemoval = true)
+    @JsonManagedReference
+    private List<Image> images;
+
+    @Column(name = "image_main_url", columnDefinition = "TEXT")
     private String imageMainUrl;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String title;
 
-    @Column(name="on_stock", nullable = false)
+    @Column(name = "on_stock", nullable = false)
     private int onStock;
 
     @Column(columnDefinition = "TEXT", nullable = false)
@@ -68,6 +87,8 @@ public class Product {
 
     private Product(ProductBuilder productBuilder) {
         this.user = productBuilder.user;
+        this.category = productBuilder.category;
+        this.subcategory = productBuilder.subcategory;
         this.imageMainUrl = productBuilder.imageMainUrl;
         this.title = productBuilder.title;
         this.onStock = productBuilder.onStock;
@@ -90,6 +111,8 @@ public class Product {
 
     public static class ProductBuilder {
         private User user;
+        private Category category;
+        private Subcategory subcategory;
         private String imageMainUrl;
         private String title;
         private int onStock;
@@ -107,6 +130,17 @@ public class Product {
 
         public ProductBuilder setUser(User user) {
             this.user = user;
+            return this;
+        }
+
+        public ProductBuilder setCategory(Category category) {
+            this.category = category;
+            return this;
+        }
+
+
+        public ProductBuilder setSubcategory(Subcategory subcategory) {
+            this.subcategory = subcategory;
             return this;
         }
 
@@ -193,12 +227,32 @@ public class Product {
         this.productId = productId;
     }
 
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public Subcategory getSubcategory() {
+        return subcategory;
+    }
+
     public String getImageMainUrl() {
         return imageMainUrl;
     }
 
     public void setImageMainUrl(String imageMainUrl) {
         this.imageMainUrl = imageMainUrl;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 
     public User getUser() {

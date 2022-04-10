@@ -1,8 +1,5 @@
 package com.internship.AuctionApp.authentication;
 
-import lombok.Getter;
-
-@Getter
 public class UserCreateRequest {
     private final String firstName;
     private final String lastName;
