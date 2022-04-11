@@ -21,6 +21,7 @@ import AppContext from "./Store/Context-API/app-context";
 import {
   index,
   shopProduct,
+  shopCategory,
   shop,
   account,
   termsAndConditions,
@@ -31,13 +32,14 @@ import {
   register,
   error,
 } from "./Data/Routes";
+import Shop from "./Pages/ShopPage/Shop";
 
 const App = () => {
   const { isDataLoading } = useContext(AppContext);
   return (
-    <PageLayoutWrapper>
-      {isDataLoading && <LoadingModal />}
-      <BrowserRouter>
+    <BrowserRouter>
+      <PageLayoutWrapper>
+        {isDataLoading && <LoadingModal />}
         <Switch>
           <Route exact path={index}>
             <LandingPage />
@@ -45,8 +47,11 @@ const App = () => {
           <Route path={shopProduct}>
             <ProductOverviewPage />
           </Route>
+          <Route exact path={shopCategory}>
+            <Shop />
+          </Route>
           <Route exact path={shop}>
-            <h1>Shop page</h1>
+            <Shop />
           </Route>
           <Route path={account}>
             <h1>My Account page</h1>
@@ -73,8 +78,8 @@ const App = () => {
             <PageNotFound />
           </Route>
         </Switch>
-      </BrowserRouter>
-    </PageLayoutWrapper>
+      </PageLayoutWrapper>
+    </BrowserRouter>
   );
 };
 

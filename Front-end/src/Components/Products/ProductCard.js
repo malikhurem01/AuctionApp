@@ -8,7 +8,9 @@ const ProductCard = ({ product }) => {
   return (
     <Link to={"/shop/product?productId=" + product.productId}>
       <div className={classes.grid_product}>
-        <img src={product.imageMainUrl} alt="product on home page" />
+        <div className={classes.image_container}>
+          <img src={product.imageMainUrl} alt="product on home page" />
+        </div>
         <p>{shortenWord(product.title, 22)}</p>
         <p className={classes.paragraph}>
           Start From <span>${product.startPrice}</span>

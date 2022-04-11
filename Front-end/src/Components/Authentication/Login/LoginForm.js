@@ -43,10 +43,11 @@ const LoginForm = () => {
         //REDIRECT
         window.location.replace("/");
       })
-      .catch(() => {
+      .catch((err) => {
         //REMOVE LOADING SCREEN
         isDataLoadingHandler(false);
-
+        //
+        console.error(err.message);
         //DISPLAY ERROR
         setError(WRONG_CREDENTIALS_ERROR);
       });
