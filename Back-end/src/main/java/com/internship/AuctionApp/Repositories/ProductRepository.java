@@ -15,8 +15,8 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    public Page<Product> findAllByCategoryIn(Pageable pageable,
-                                             List<Category> categories);
+    public Page<Product> findAllByCategoryInAndStartPriceBetween(Pageable pageable,
+                                             List<Category> categories, float priceMin, float priceMax);
 
     public Page<Product>
     findAllByCategoryInOrSubcategoryInAndStartPriceBetween(Pageable pageable,

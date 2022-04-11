@@ -4,6 +4,10 @@ import AppContext from "../../Store/Context-API/app-context";
 import ProductsGrid from "../../Components/Products/ProductsGrid";
 import productService from "../../Services/productsService";
 
+import gridActiveSvg from "../../Assets/Svg/gridActiveSvg.svg";
+import gridNotActiveSvg from "../../Assets/Svg/gridNotActiveSvg.svg";
+import listActiveSvg from "../../Assets/Svg/listActiveSvg.svg";
+import listNotActiveSvg from "../../Assets/Svg/listNotActiveSvg.svg";
 import minusSvg from "../../Assets/Svg/minusSvg.svg";
 
 import classes from "./Shop.module.css";
@@ -13,6 +17,7 @@ import "./Slider.css";
 import noUiSlider from "nouislider";
 import Category from "./Category";
 import ExploreMoreButton from "../../Components/UI/ExploreMoreButton";
+import ProductsList from "../../Components/Products/ProductsList";
 
 import {
   BY_CREATION_DATE,
@@ -25,8 +30,10 @@ import {
 const Shop = () => {
   const [products, setProductsState] = useState([]);
   const [allProductsFetched, setAllProductsFetched] = useState(false);
+  const [productPreview, setProductPreview] = useState("grid");
   const [priceFilter, setPriceFilter] = useState({ priceMin: 0, priceMax: 0 });
   const [priceRangeState, setPriceRangeState] = useState({ min: 0, max: 0 });
+  const [timeout, setTimeoutState] = useState(null);
 
   //App Context imports
   const {
@@ -68,6 +75,11 @@ const Shop = () => {
       direction: sortDirection,
     };
     handleAddFilter(updatedConfigState);
+  };
+
+  //Grid or list preview handler
+  const handlePreview = ({ target }) => {
+    setProductPreview(target.name);
   };
 
   const hasAnyFilter = () => {
@@ -150,6 +162,37 @@ const Shop = () => {
     [setFilters]
   );
 
+  //Handle price change when user uses the price slider
+  const handlePriceInputChange = ({ target }) => {
+    clearTimeout(timeout);
+    let filter;
+    if (target.id === "max") {
+      filter = {
+        priceMin: priceFilter.priceMin,
+        priceMax: parseInt(target.value),
+      };
+    } else if (target.id === "min") {
+      filter = {
+        priceMin: parseInt(target.value),
+        priceMax: priceFilter.priceMax,
+      };
+    }
+    initializePriceSlider(
+      filter.priceMin,
+      filter.priceMax,
+      priceRangeState.min,
+      priceRangeState.max
+    );
+    setTimeoutState(() => {
+      return setTimeout(() => {
+        handleAddFilter({
+          priceMin: priceFilter.priceMin,
+          priceMax: priceFilter.priceMax,
+        });
+      }, 1000);
+    });
+  };
+
   //Handler for fetching products
   const handleProductFetch = useCallback(async () => {
     const filterRequestBody = {
@@ -161,7 +204,6 @@ const Shop = () => {
       sort: filters.sort,
       direction: filters.direction,
     };
-    console.log(filterRequestBody);
     //SET LOADING SCREEN
     isDataLoadingHandler(true);
     return productService
@@ -358,8 +400,28 @@ const Shop = () => {
               <option value={BY_EXPIRATION_DATE}>Time left</option>
             </select>
           </div>
+          <div className={classes.viewIconsContainer}>
+            <img
+              name="grid"
+              onClick={handlePreview}
+              src={productPreview === "list" ? gridNotActiveSvg : gridActiveSvg}
+              alt="grid icon"
+            />
+            <span>Grid</span>
+            <img
+              name="list"
+              onClick={handlePreview}
+              src={productPreview === "list" ? listActiveSvg : listNotActiveSvg}
+              alt="list icon"
+            />
+            <span>List</span>
+          </div>
         </div>
-        <ProductsGrid products={products} />
+        {productPreview === "grid" ? (
+          <ProductsGrid products={products} />
+        ) : (
+          <ProductsList products={products} />
+        )}
         <div
           onClick={handleExploreMore}
           className={classes.exploreMore_container}

@@ -77,9 +77,12 @@ public class ProductServiceImpl implements ProductService {
                                             .withSort(Sort.by(sortDirection, productFilterRequest.getSort())),
                                     categories, subcategories, productFilterRequest.getPriceMin(), productFilterRequest.getPriceMax());
                 } else {
-                    productPage = productRepository.findAllByCategoryIn(PageRequest.of(productFilterRequest.getOffset(),
+                    productPage = productRepository.findAllByCategoryInAndStartPriceBetween(PageRequest.of(productFilterRequest.getOffset(),
                                     PRODUCTS_PER_PAGE)
-                            .withSort(Sort.by(sortDirection, productFilterRequest.getSort())), categories);
+                            .withSort(Sort.by(sortDirection, productFilterRequest.getSort())),
+                            categories,
+                            productFilterRequest.getPriceMin(),
+                            productFilterRequest.getPriceMax());
                 }
             } else if (!productFilterRequest.getSubcategories().isEmpty()) {
                 List<Long> subcategoriesList = productFilterRequest
