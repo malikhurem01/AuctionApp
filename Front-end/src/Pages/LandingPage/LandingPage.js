@@ -1,53 +1,48 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 
-import ProductsGrid from "../../Components/Products/ProductsGrid";
-
+import AppContext from "../../Store/Context-API/app-context";
 import productService from "../../Services/productsService";
 
+import { Link } from "react-router-dom";
 import ExploreMoreButton from "../../Components/UI/ExploreMoreButton";
+import ProductsGrid from "../../Components/Products/ProductsGrid";
 import arrow from "../../Assets/Svg/arrowRight.svg";
 
-import AppContext from "../../Store/Context-API/app-context";
+import classes from "./LandingPage.module.css";
+
 import {
   BY_CREATION_DATE,
   BY_EXPIRATION_DATE,
 } from "../../Data/Constants/sort";
 
-import classes from "./LandingPage.module.css";
-
-// TODO
-// Implement proper categories filtering in next sprint and revisit this code.
-const categories = [
-  { name: "Fashion", url: "/categories?category=Fashion" },
-  { name: "Accesories", url: "/categories?category=Accesories" },
-  { name: "Jewlery", url: "/categories?category=Jewlery" },
-  { name: "Shoes", url: "/categories?category=Shoes" },
-  { name: "Sportware", url: "/categories?category=Sportware" },
-  { name: "Home", url: "/categories?category=Home" },
-  { name: "Electronics", url: "/categories?category=Electronics" },
-  { name: "Mobile", url: "/categories?category=Mobile" },
-  { name: "Computer", url: "/categories?category=Computer" },
-  { name: "All Categories", url: "/categories?category=All" },
-];
-
 const LandingPage = () => {
   // Context hook
-  const { isDataLoading, isDataLoadingHandler } = useContext(AppContext);
+  const {
+    isDataLoading,
+    isDataLoadingHandler,
+    categoriesState,
+    handleCategoryFetch,
+    handleCategoryFilter,
+  } = useContext(AppContext);
 
   //States
   const [newArrivalsActive, setNewArrivalsActive] = useState(true);
   const [lastChanceActive, setLastChanceActive] = useState(false);
   const [allProductsFetched, setAllProductsFetched] = useState(false);
-  const [offset, setOffset] = useState(0);
+  const [configState, setConfigState] = useState({
+    offset: 0,
+    sort: BY_CREATION_DATE,
+  });
   const [productsState, setProductsState] = useState([]);
   const [advertProduct, setAdvertProduct] = useState({});
 
-  const { title, startPrice, imageMainUrl, productId } = advertProduct;
+  const { title, startPrice, imageMainUrl, productId, description } =
+    advertProduct;
 
   //Handlers
   const handleDataReset = () => {
-    setOffset(0);
-    setProductsState([]);
+    const updatedProductState = [];
+    setProductsState(() => updatedProductState);
     setAllProductsFetched(false);
   };
 
@@ -59,54 +54,76 @@ const LandingPage = () => {
   const handleTabChange = (tab) => {
     handleDataReset();
     if (tab === "NEW_ARRIVALS") {
-      handleProductFetch(BY_CREATION_DATE, 0);
+      const updatedConfigState = {
+        offset: 0,
+        sort: BY_CREATION_DATE,
+      };
+      setConfigState(() => updatedConfigState);
       handleTabs({ newArrivals: true, lastChance: false });
     } else if (tab === "LAST_CHANCE") {
-      handleProductFetch(BY_EXPIRATION_DATE, 0);
+      const updatedConfigState = {
+        offset: 0,
+        sort: BY_EXPIRATION_DATE,
+      };
+      setConfigState(() => updatedConfigState);
       handleTabs({ newArrivals: false, lastChance: true });
     }
   };
 
   const handleExploreMore = () => {
-    //SORT WITH REGARDS TO THE ACTIVE TAB
-    const sort = newArrivalsActive ? BY_CREATION_DATE : BY_EXPIRATION_DATE;
     //SET PAGE OFFSET
-    const offsetValue = offset + 1;
-    setOffset(offsetValue);
-    //FETCH MORE PRODUCTS
-    handleProductFetch(sort, offsetValue);
+    const offsetValue = configState.offset + 1;
+    const sort = newArrivalsActive ? BY_CREATION_DATE : BY_EXPIRATION_DATE;
+    setConfigState({ offset: offsetValue, sort: sort });
   };
 
-  const handleProductFetch = useCallback(
-    async (sort, offset) => {
-      //SET LOADING SCREEN
-      isDataLoadingHandler(true);
-
-      //GET REQUEST
-      return productService.fetchAllProducts(sort, offset).then((response) => {
-        const productsPage = response.data.products;
+  const handleProductFetch = useCallback(async () => {
+    const filterRequestBody = {
+      category: [],
+      subcategories: [],
+      priceMin: 0,
+      priceMax: 1000,
+      offset: configState.offset,
+      pageSize: 8,
+      sort: configState.sort,
+    };
+    //SET LOADING SCREEN
+    isDataLoadingHandler(true);
+    return productService
+      .fetchProducts(filterRequestBody)
+      .then(({ data }) => {
+        const productsPage = data.products;
         //CHECK IF THERE ARE ANY PRODUCTS
         if (productsPage.length === 0) {
           setAllProductsFetched(true);
+        } else {
+          setAllProductsFetched(false);
         }
         if (productsPage.length > 0) {
+          //SET ADVERT PRODUCT
+          setAdvertProduct(productsPage[0].product);
           setProductsState((prevProducts) => {
             //ADD NEW PRODUCTS WITHOUT REMOVING PREVIOUS WHEN USING EXPLORE MORE BUTTON
             const updatedProducts = [...prevProducts, ...productsPage];
             return updatedProducts;
           });
-          setAdvertProduct(() => productsPage[0].product);
         }
-        //REMOVE LOADING SCREEN
+        if (productsPage.length < 8) {
+          setAllProductsFetched(true);
+        }
         isDataLoadingHandler(false);
-      });
-    },
-    [isDataLoadingHandler]
-  );
+      })
+      .catch(({ message }) => console.log("ERROR: " + message));
+  }, [isDataLoadingHandler, configState.sort, configState.offset]);
 
   useEffect(() => {
-    //INITIAL FETCH ACTION AND SORT BY CREATION DATE
-    handleProductFetch(BY_CREATION_DATE, 0);
+    //FETCH ALL AVAILABLE CATEGORIES
+    handleCategoryFetch();
+  }, [handleCategoryFetch]);
+
+  useEffect(() => {
+    //FETCH PRODUCTS
+    handleProductFetch();
   }, [handleProductFetch]);
 
   return (
@@ -115,10 +132,21 @@ const LandingPage = () => {
         <div className={classes.categories_container}>
           <p>Categories</p>
           <ul className={classes.categoriesList}>
-            {categories.map(({ name, url }) => {
+            {categoriesState.map(({ name, id }) => {
               return (
-                <li key={name}>
-                  <a href={url}>{name}</a>
+                <li id={id} key={name}>
+                  <Link
+                    to={"/shop"}
+                    onClick={(ev) =>
+                      handleCategoryFilter(
+                        ev.target.parentNode.id,
+                        ev.target.textContent,
+                        "add"
+                      )
+                    }
+                  >
+                    {name}
+                  </Link>
                 </li>
               );
             })}
@@ -130,15 +158,7 @@ const LandingPage = () => {
               <div className={classes.advertisement_product_about}>
                 <h3>{title}</h3>
                 <h3>Start From ${startPrice}</h3>
-                <p className={classes.paragraph}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                  placerat mi commodo odio condimentum fermentum. Integer
-                  viverra ligula libero, id dapibus turpis lobortis et.
-                  Pellentesque habitant morbi tristique senectus et netus et
-                  malesuada fames ac turpis egestas. Maecenas eget suscipit
-                  nisl. Morbi a nisi condimentum, imperdiet risus id, sagittis
-                  ligula.
-                </p>
+                <p className={classes.paragraph}>{description}</p>
                 <a
                   href={`/shop/product?productId=${productId}`}
                   className={classes.btn}

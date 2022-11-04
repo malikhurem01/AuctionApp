@@ -4,26 +4,29 @@ import SocialMediaIcons from "../UI/SocialMediaIcons";
 import NavigationList from "./Navigation/NavigationList";
 
 import AuthContext from "../../Store/Context-API/auth-context";
+import AppContext from "../../Store/Context-API/app-context";
 
 import searchIcon from "../../Assets/Svg/searchIconSvg.svg";
 import logo from "../../Assets/Svg/auction-app-logo.svg";
 
 import classes from "./Header.module.css";
+import { Link } from "react-router-dom";
 
 const Header = () => {
-  const userContext = useContext(AuthContext);
+  const { userDataState } = useContext(AuthContext);
+  const { isNavHidden, handleIsNavHidden } = useContext(AppContext);
 
-  const user = userContext.userDataState;
+  const user = userDataState;
 
-  let isHidden =
-    window.location.href.includes("/login") ||
-    window.location.href.includes("/register");
+  if (window.location.href.includes("logout")) {
+    handleIsNavHidden(true);
+  }
 
   let highlightNav = window.location.href.includes("shop") ? "shop" : "home";
 
   return (
     <React.Fragment>
-      <div className={isHidden ? classes.header_container : " "}>
+      <div className={isNavHidden ? classes.header_container : " "}>
         <header>
           <div className={classes.header_bar}>
             <SocialMediaIcons animate={true} />
@@ -35,13 +38,17 @@ const Header = () => {
             ) : (
               <div className={classes.login_buttons}>
                 <span className={classes.sign_btn}>
-                  <a href="/login">Login </a>
+                  <Link to="/login" onClick={() => handleIsNavHidden(true)}>
+                    Login{" "}
+                  </Link>
                 </span>
                 &emsp;
                 <span className={classes.interText}>or</span>
                 &emsp;
                 <span className={classes.sign_btn}>
-                  <a href="/register">Create an account </a>
+                  <Link to="/register" onClick={() => handleIsNavHidden(true)}>
+                    Create an account{" "}
+                  </Link>
                 </span>
               </div>
             )}
@@ -50,17 +57,17 @@ const Header = () => {
         <nav>
           <div
             className={
-              isHidden
+              isNavHidden
                 ? classes.navBar_container_hidden
                 : classes.navBar_container
             }
           >
             <div className={classes.navBar_logo}>
-              <a href="/">
+              <Link to="/" onClick={() => handleIsNavHidden(false)}>
                 <img src={logo} alt="Auction app logo" />
-              </a>
+              </Link>
             </div>
-            {isHidden ? (
+            {isNavHidden ? (
               " "
             ) : (
               <React.Fragment>

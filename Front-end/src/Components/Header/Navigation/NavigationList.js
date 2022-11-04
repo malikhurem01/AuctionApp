@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
-
-import classes from "./NavigationList.module.css";
+import { Link } from "react-router-dom";
 
 import AuthContext from "../../../Store/Context-API/auth-context";
+
+import classes from "./NavigationList.module.css";
 
 const NavigationList = ({ highlight }) => {
   const userContext = useContext(AuthContext);
@@ -20,12 +21,12 @@ const NavigationList = ({ highlight }) => {
         {elements.map(({ label, route }) => {
           return (
             <li key={label}>
-              <a
+              <Link
                 className={highlight === label ? classes.link_active : ""}
-                href={route}
+                to={route}
               >
                 {label}
-              </a>
+              </Link>
             </li>
           );
         })}

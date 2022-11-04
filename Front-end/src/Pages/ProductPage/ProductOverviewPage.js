@@ -16,6 +16,22 @@ import classes from "./ProductOverviewPage.module.css";
 import AppContext from "../../Store/Context-API/app-context";
 
 const ProductOverviewPage = () => {
+  //INITIAL STATES
+  const INITIAL_BID_NOTIFICATION_STATE = {
+    notificationState: null,
+    notificationMessage: null,
+  };
+
+  const INITIAL_PRODUCT_HISTORY_STATE = {
+    latestBidderId: null,
+    highestBid: null,
+    numberOfBids: null,
+  };
+
+  const INITIAL_PRODUCT_STATE = {};
+
+  const INITIAL_IMAGES_STATE = [];
+
   //STATES
   const [bidPrice, setBidPrice] = useState(null);
   const [isAvailable, setIsAvailable] = useState(true);
@@ -24,21 +40,18 @@ const ProductOverviewPage = () => {
   const [weeks, setWeeks] = useState(0);
   const [days, setDays] = useState(0);
   const [mainImage, setMainImage] = useState({});
-  const [images, setImages] = useState([]);
-  const [product, setProduct] = useState({});
-  const [bidNotification, setBidNotification] = useState({
-    notificationState: null,
-    notificationMessage: null,
-  });
-  const [productBidHistory, setProductBidHistory] = useState({
-    latestBidderId: null,
-    highestBid: null,
-    numberOfBids: null,
-  });
+  const [images, setImages] = useState(INITIAL_IMAGES_STATE);
+  const [productState, setProduct] = useState(INITIAL_PRODUCT_STATE);
+  const [bidNotification, setBidNotification] = useState(
+    INITIAL_BID_NOTIFICATION_STATE
+  );
+  const [productBidHistory, setProductBidHistory] = useState(
+    INITIAL_PRODUCT_HISTORY_STATE
+  );
 
   const { notificationState, notificationMessage } = bidNotification;
   const { highestBid, numberOfBids } = productBidHistory;
-  const { title, description, startPrice } = product;
+  const { title, description, startPrice } = productState;
 
   //HOOKS
   const query = useQuery();
@@ -109,7 +122,7 @@ const ProductOverviewPage = () => {
           isDataLoadingHandler(false);
         })
         //IF FAILURE
-        .catch((err) => {
+        .catch(() => {
           //SET ERROR NOTIFICATION
           setBidNotification({
             notificationState: "ERROR",
@@ -142,7 +155,7 @@ const ProductOverviewPage = () => {
       .then(({ data, headers }) => {
         //SET PRODUCT STATE
         setProduct(() => data.product);
-        setImages(() => data.images);
+        setImages(data.product.images);
         setMainImage(() => data.product.imageMainUrl);
         handleTimeRemaining(headers.date, data.product);
         if (userDataState) {

@@ -11,7 +11,6 @@ import com.internship.AuctionApp.Exceptions.UserExistsException;
 import com.internship.AuctionApp.Models.User;
 import com.internship.AuctionApp.services.AuthenticationService;
 import com.internship.AuctionApp.services.UserService;
-import com.internship.AuctionApp.services.UserServiceImpl;
 import com.internship.AuctionApp.configuration.JWTConfig;
 import com.internship.AuctionApp.utils.JWTDecode;
 import lombok.extern.slf4j.Slf4j;
@@ -47,21 +46,23 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final AuthenticationService authenticationService;
-    private final JWTConfig jwtConfig = new JWTConfig();
+    private final JWTConfig jwtConfig;
 
     @Autowired
     public AuthenticationController(final AuthenticationManager authenticationManager,
                                     final UserService userService,
-                                    final AuthenticationService authenticationService) {
+                                    final AuthenticationService authenticationService,
+                                    final JWTConfig jwtConfig) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.authenticationService = authenticationService;
+        this.jwtConfig = jwtConfig;
     }
 
     @GetMapping(path = "/auth/users/current")
     public ResponseEntity<?> getUserWithToken(final HttpServletRequest request) throws UsernameNotFoundException {
         try {
-            final DecodedJWT decodedJWT = JWTDecode.verifyToken(request.getHeader(AUTHORIZATION));
+            final DecodedJWT decodedJWT = JWTDecode.verifyToken(request.getHeader(AUTHORIZATION), jwtConfig.getTokenPrefix());
             final String username = decodedJWT.getSubject();
             return ResponseEntity.ok().body(userService.retrieveUser(username));
         } catch (UsernameNotFoundException e) {
@@ -123,7 +124,7 @@ public class AuthenticationController {
         final String authorizationHeader = request.getHeader(AUTHORIZATION);
         if (authorizationHeader != null && authorizationHeader.startsWith(jwtConfig.getTokenPrefix())) {
             try {
-                final DecodedJWT decodedJWT = JWTDecode.verifyToken(authorizationHeader);
+                final DecodedJWT decodedJWT = JWTDecode.verifyToken(authorizationHeader, jwtConfig.getTokenPrefix());
                 final String username = decodedJWT.getSubject();
                 final User user = userService.loadUserByUsername(username);
                 String new_access_token = userService.generateToken(

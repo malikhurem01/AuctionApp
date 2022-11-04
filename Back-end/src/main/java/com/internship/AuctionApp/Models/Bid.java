@@ -25,7 +25,7 @@ public class Bid {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Product productId;
 
-    @Column(name="bid_price")
+    @Column(name = "bid_price")
     private float bidPrice;
 
     @Column(name = "created_at")
@@ -42,7 +42,7 @@ public class Bid {
 
     }
 
-    public Long getId(){
+    public Long getId() {
         return id;
     }
 

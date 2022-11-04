@@ -1,6 +1,7 @@
 const routes = {
   index: "/",
   shopProduct: "/shop/product",
+  shopCategory: "/shop/:category",
   shop: "/shop",
   account: "/account",
   termsAndConditions: "/terms-and-conditions",

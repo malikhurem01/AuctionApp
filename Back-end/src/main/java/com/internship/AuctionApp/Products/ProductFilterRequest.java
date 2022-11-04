@@ -1,17 +1,72 @@
 package com.internship.AuctionApp.Products;
 
-import com.internship.AuctionApp.Models.Product;
-import org.springframework.data.domain.Page;
+import java.util.List;
 
 public class ProductFilterRequest {
+    //Category List
+    private List<Integer> categories;
+    //Subcategory List
+    private List<Integer> subcategories;
+    //Price Min
+    private float priceMin;
+    //Price Max
+    private float priceMax;
     private int offset;
-    private int pageSize;
     private String sort;
+    private int direction;
 
-    public ProductFilterRequest(int offset, int pageSize, String sort) {
+    public ProductFilterRequest(List<Integer> category, List<Integer> subcategories, float priceMin, float priceMax, int offset, String sort, int direction) {
+        this.categories = category;
+        this.subcategories = subcategories;
+        this.priceMin = priceMin;
+        this.priceMax = priceMax;
         this.offset = offset;
-        this.pageSize = pageSize;
         this.sort = sort;
+        this.direction = direction;
+    }
+
+    public boolean isFiltered() {
+        return !this.categories.isEmpty() || !this.subcategories.isEmpty() || this.priceMin > 0 || this.priceMax > 0;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
+    }
+
+    public List<Integer> getCategory() {
+        return categories;
+    }
+
+    public void setCategory(List<Integer> category) {
+        this.categories = category;
+    }
+
+    public List<Integer> getSubcategories() {
+        return subcategories;
+    }
+
+    public void setSubcategories(List<Integer> subcategories) {
+        this.subcategories = subcategories;
+    }
+
+    public float getPriceMin() {
+        return priceMin;
+    }
+
+    public void setPriceMin(float priceMin) {
+        this.priceMin = priceMin;
+    }
+
+    public float getPriceMax() {
+        return priceMax;
+    }
+
+    public void setPriceMax(float priceMax) {
+        this.priceMax = priceMax;
     }
 
     public int getOffset() {
@@ -20,14 +75,6 @@ public class ProductFilterRequest {
 
     public void setOffset(int offset) {
         this.offset = offset;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
     }
 
     public String getSort() {

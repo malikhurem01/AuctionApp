@@ -13,6 +13,7 @@ import com.internship.AuctionApp.Models.Bid;
 import com.internship.AuctionApp.Models.Product;
 import com.internship.AuctionApp.Models.User;
 import com.internship.AuctionApp.Repositories.BidRepository;
+import com.internship.AuctionApp.configuration.JWTConfig;
 import com.internship.AuctionApp.utils.JWTDecode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,12 +28,14 @@ public class BidServiceImpl implements BidService {
     private final BidRepository bidRepository;
     private final ProductService productService;
     private final UserServiceImpl userServiceImpl;
+    private final JWTConfig jwtConfig;
 
     @Autowired
-    public BidServiceImpl(BidRepository bidRepository, ProductService productService, UserServiceImpl userServiceImpl) {
+    public BidServiceImpl(BidRepository bidRepository, ProductService productService, UserServiceImpl userServiceImpl, JWTConfig jwtConfig) {
         this.bidRepository = bidRepository;
         this.productService = productService;
         this.userServiceImpl = userServiceImpl;
+        this.jwtConfig = jwtConfig;
     }
 
     @Override
@@ -65,7 +68,7 @@ public class BidServiceImpl implements BidService {
         } catch (Exception err) {
             throw new EntityNotFoundException("Product not found");
         }
-        final DecodedJWT decodedJWT = JWTDecode.verifyToken(authorizationHeader);
+        final DecodedJWT decodedJWT = JWTDecode.verifyToken(authorizationHeader, jwtConfig.getTokenPrefix());
         final String username = decodedJWT.getSubject();
         User user = userServiceImpl.loadUserByUsername(username);
         if (user.getUserId().equals(product.getUser().getUserId())) {
@@ -92,7 +95,7 @@ public class BidServiceImpl implements BidService {
         return new BidDTO(
                 bid.getId(),
                 new UserDTO(bid.getUser()),
-                new ProductDTO(bid.getProductId(), null),
+                new ProductDTO(bid.getProductId()),
                 bid.getBidPrice(),
                 bid.getCreatedAt());
     }

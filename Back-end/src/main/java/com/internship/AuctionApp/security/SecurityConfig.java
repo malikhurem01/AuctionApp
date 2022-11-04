@@ -1,5 +1,7 @@
 package com.internship.AuctionApp.security;
 
+import com.internship.AuctionApp.configuration.AuthWhitelistConfig;
+import com.internship.AuctionApp.configuration.JWTConfig;
 import com.internship.AuctionApp.filters.JWTAuthenticationFilter;
 import com.internship.AuctionApp.filters.JWTAuthorizationFilter;
 import com.internship.AuctionApp.services.UserServiceImpl;
@@ -19,27 +21,29 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserServiceImpl userServiceImpl;
-
-    @Autowired
     private final PasswordConfig passwordConfig;
+    private final JWTConfig jwtConfig;
+    private final AuthWhitelistConfig authWhitelistConfig;
 
     @Autowired
-    public SecurityConfig(UserServiceImpl userServiceImpl, PasswordConfig passwordConfig) {
+    public SecurityConfig(UserServiceImpl userServiceImpl, PasswordConfig passwordConfig, JWTConfig jwtConfig, AuthWhitelistConfig authWhitelistConfig) {
         this.userServiceImpl = userServiceImpl;
         this.passwordConfig = passwordConfig;
+        this.jwtConfig = jwtConfig;
+        this.authWhitelistConfig = authWhitelistConfig;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         JWTAuthenticationFilter customAuthenticationFilter = new JWTAuthenticationFilter(authenticationManagerBean(), null);
         http.cors().and().csrf().disable();
-        http.authorizeRequests().antMatchers("/api/v1/auth/users/current").authenticated();
-        http.authorizeRequests().antMatchers("/api/v1/authenticate").permitAll();
-        http.authorizeRequests().antMatchers("/api/v1/get/products").permitAll();
-        http.authorizeRequests().antMatchers("/api/v1/get/product").permitAll();
-
+        http.authorizeRequests().antMatchers(authWhitelistConfig.getRoute() + "/auth/users/current").authenticated();
+        http.authorizeRequests().antMatchers(authWhitelistConfig.getRoute() + "/authenticate").permitAll();
+        http.authorizeRequests().antMatchers(authWhitelistConfig.getRoute() + "/get/products").permitAll();
+        http.authorizeRequests().antMatchers(authWhitelistConfig.getRoute() + "/get/product").permitAll();
         http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        authWhitelistConfig.initializeRoutes();
+        http.addFilterBefore(new JWTAuthorizationFilter(jwtConfig, authWhitelistConfig), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

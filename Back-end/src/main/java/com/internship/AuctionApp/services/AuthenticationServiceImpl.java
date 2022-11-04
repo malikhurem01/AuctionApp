@@ -32,7 +32,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .setUpdatedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
         try {
-             return userServiceImpl.registerUser(newUser);
+            return userServiceImpl.registerUser(newUser);
         } catch (PasswordNotValidException e) {
             throw new PasswordNotValidException(e.getMessage());
         } catch (UserExistsException e) {

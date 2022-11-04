@@ -15,7 +15,7 @@ import AppContext from "../../../Store/Context-API/app-context";
 
 const RegistrationForm = () => {
   //HOOKS
-  const { isDataFetchedHandler } = useContext(AppContext);
+  const { isDataLoadingHandler } = useContext(AppContext);
 
   //STATES
   const [error, setError] = useState(false);
@@ -24,7 +24,7 @@ const RegistrationForm = () => {
   const handleSubmit = async (ev) => {
     ev.preventDefault();
     //SET LOADING SCREEN
-    isDataFetchedHandler(false);
+    isDataLoadingHandler(true);
 
     //COLLECT REGISTRATION DATA
     const registrationData = {
@@ -39,7 +39,7 @@ const RegistrationForm = () => {
     //VALIDATE
     if (!validatePassword(password)) {
       setError(ERROR_PASSWORD);
-      isDataFetchedHandler(true);
+      isDataLoadingHandler(false);
       return;
     }
 
@@ -51,7 +51,7 @@ const RegistrationForm = () => {
       })
       .catch(({ response }) => {
         //REMOVE LOADING SCREEN
-        isDataFetchedHandler(true);
+        isDataLoadingHandler(false);
         if (response.status === 409) setError(ERROR_USER);
         else if (response.status === 400) setError(ERROR_PASSWORD);
         else if (response.status === 500) setError(SERVER_ERROR);
